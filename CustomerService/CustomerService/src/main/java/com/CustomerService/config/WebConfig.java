@@ -1,18 +1,13 @@
 package com.CustomerService.config;
 
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig {
-
-    @Bean
-    public ApiKeyAuthFilter apiKeyAuthFilter() {
-        return new ApiKeyAuthFilter();
-    }
 
     @Bean
     public FilterRegistrationBean<ApiKeyAuthFilter> apiKeyFilterRegistration(
@@ -36,7 +31,9 @@ public class WebConfig {
             public void addCorsMappings(CorsRegistry registry) {
 
                 registry.addMapping("/**")
-                        .allowedOrigins("https://customerservice-mmah.onrender.com")
+                        .allowedOrigins(
+                                "https://customerservice-mmah.onrender.com"
+                        )
                         .allowedMethods(
                                 "GET",
                                 "POST",
@@ -50,3 +47,4 @@ public class WebConfig {
         };
     }
 }
+
