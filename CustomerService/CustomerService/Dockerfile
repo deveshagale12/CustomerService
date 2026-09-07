@@ -5,9 +5,8 @@ FROM eclipse-temurin:21-jdk AS build
 
 WORKDIR /app
 
-# Copy Maven files
+# Copy Maven project files
 COPY pom.xml .
-COPY .mvn .mvn
 COPY mvnw .
 
 # Make Maven wrapper executable
@@ -19,7 +18,7 @@ RUN ./mvnw dependency:go-offline -B
 # Copy source code
 COPY src src
 
-# Build Spring Boot application
+# Build application
 RUN ./mvnw clean package -DskipTests
 
 
@@ -30,10 +29,10 @@ FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-# Copy generated JAR
+# Copy Spring Boot JAR
 COPY --from=build /app/target/*.jar app.jar
 
-# Spring Boot port
+# Application port
 EXPOSE 8081
 
 # Start application
