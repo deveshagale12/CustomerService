@@ -17,7 +17,9 @@ public class WebConfig {
                 new FilterRegistrationBean<>();
 
         registration.setFilter(apiKeyAuthFilter);
+
         registration.addUrlPatterns("/api/*");
+
         registration.setOrder(1);
 
         return registration;
@@ -25,15 +27,14 @@ public class WebConfig {
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
+
         return new WebMvcConfigurer() {
 
             @Override
             public void addCorsMappings(CorsRegistry registry) {
 
                 registry.addMapping("/**")
-                        .allowedOrigins(
-                                "https://customerservice-mmah.onrender.com"
-                        )
+                        .allowedOrigins("*")
                         .allowedMethods(
                                 "GET",
                                 "POST",
@@ -47,4 +48,3 @@ public class WebConfig {
         };
     }
 }
-

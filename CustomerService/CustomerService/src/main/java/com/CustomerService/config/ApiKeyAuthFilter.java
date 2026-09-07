@@ -41,7 +41,11 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
                 || configuredApiKey.isBlank()
                 || !requestApiKey.equals(configuredApiKey)) {
 
-            writeUnauthorizedResponse(response, request.getRequestURI());
+            writeUnauthorizedResponse(
+                    response,
+                    request.getRequestURI()
+            );
+
             return;
         }
 
@@ -61,11 +65,14 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
         body.put("timestamp", LocalDateTime.now().toString());
         body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
         body.put("error", "Unauthorized");
+
         body.put(
                 "message",
                 "Missing or invalid API key. Provide a valid '"
-                        + API_KEY_HEADER + "' header."
+                        + API_KEY_HEADER
+                        + "' header."
         );
+
         body.put("path", path);
 
         response.getWriter().write(
@@ -73,4 +80,3 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
         );
     }
 }
-
