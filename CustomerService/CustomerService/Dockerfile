@@ -1,25 +1,21 @@
 # =========================
 # Build Stage
 # =========================
-FROM eclipse-temurin:21-jdk AS build
+FROM maven:3.9.11-eclipse-temurin-21 AS build
 
 WORKDIR /app
 
-# Copy Maven project files
+# Copy Maven configuration
 COPY pom.xml .
-COPY mvnw .
-
-# Make Maven wrapper executable
-RUN chmod +x mvnw
 
 # Download dependencies
-RUN ./mvnw dependency:go-offline -B
+RUN mvn dependency:go-offline -B
 
 # Copy source code
 COPY src src
 
-# Build application
-RUN ./mvnw clean package -DskipTests
+# Build Spring Boot application
+RUN mvn clean package -DskipTests
 
 
 # =========================
@@ -29,10 +25,10 @@ FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-# Copy Spring Boot JAR
+# Copy generated JAR
 COPY --from=build /app/target/*.jar app.jar
 
-# Application port
+# Spring Boot port
 EXPOSE 8081
 
 # Start application
