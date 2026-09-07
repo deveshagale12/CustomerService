@@ -1,6 +1,3 @@
-# =========================
-# Build Stage
-# =========================
 FROM eclipse-temurin:21-jdk AS build
 
 WORKDIR /app
@@ -18,9 +15,6 @@ COPY src src
 RUN ./mvnw clean package -DskipTests
 
 
-# =========================
-# Runtime Stage
-# =========================
 FROM eclipse-temurin:21-jre
 
 WORKDIR /app
