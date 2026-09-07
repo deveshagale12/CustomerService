@@ -1,21 +1,26 @@
-# Build stage
+# =========================
+# Build Stage
+# =========================
 FROM eclipse-temurin:21-jdk AS build
 
 WORKDIR /app
 
-COPY CustomerService/pom.xml .
-COPY CustomerService/.mvn .mvn
-COPY CustomerService/mvnw .
+COPY pom.xml .
+COPY .mvn .mvn
+COPY mvnw .
 
 RUN chmod +x mvnw
+
 RUN ./mvnw dependency:go-offline -B
 
-COPY CustomerService/src src
+COPY src src
 
 RUN ./mvnw clean package -DskipTests
 
 
-# Runtime stage
+# =========================
+# Runtime Stage
+# =========================
 FROM eclipse-temurin:21-jre
 
 WORKDIR /app
