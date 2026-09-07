@@ -1,10 +1,10 @@
 package com.CustomerService.controller;
 
-import com.example.customerservice.dto.CustomerRequestDto;
-import com.example.customerservice.dto.CustomerResponseDto;
-import com.example.customerservice.dto.CustomerStatusUpdateDto;
-import com.example.customerservice.entity.CustomerStatus;
-import com.example.customerservice.service.CustomerService;
+import com.CustomerService.dto.CustomerRequestDto;
+import com.CustomerService.dto.CustomerResponseDto;
+import com.CustomerService.dto.CustomerStatusUpdateDto;
+import com.CustomerService.entity.CustomerStatus;
+import com.CustomerService.service.CustomerService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

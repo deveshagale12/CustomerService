@@ -1,7 +1,7 @@
 package com.CustomerService.controller;
 
-import com.example.customerservice.dto.CustomerAddressDto;
-import com.example.customerservice.service.CustomerAddressService;
+import com.CustomerService.dto.CustomerAddressDto;
+import com.CustomerService.service.CustomerAddressService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
