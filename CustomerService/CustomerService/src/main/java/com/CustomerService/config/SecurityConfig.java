@@ -1,7 +1,7 @@
 package com.CustomerService.config;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
@@ -14,14 +14,12 @@ public class SecurityConfig {
             throws Exception {
 
         http
-            // We are using our own API-key authentication
-            .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
 
-            // Do not let Spring Security's default authentication
-            // block the request before ApiKeyAuthFilter runs.
-            .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()
-            );
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .anyRequest().permitAll()
+                );
 
         return http.build();
     }

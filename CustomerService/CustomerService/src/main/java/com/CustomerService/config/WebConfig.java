@@ -5,7 +5,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig {
 
@@ -34,7 +38,10 @@ public class WebConfig {
             public void addCorsMappings(CorsRegistry registry) {
 
                 registry.addMapping("/**")
-                        .allowedOrigins("*")
+                        .allowedOrigins(
+                                "http://localhost:5173",
+                                "https://YOUR-VERCEL-DOMAIN.vercel.app"
+                        )
                         .allowedMethods(
                                 "GET",
                                 "POST",
@@ -43,7 +50,12 @@ public class WebConfig {
                                 "DELETE",
                                 "OPTIONS"
                         )
-                        .allowedHeaders("*");
+                        .allowedHeaders(
+                                "Content-Type",
+                                "X-API-KEY",
+                                "Authorization"
+                        )
+                        .allowCredentials(false);
             }
         };
     }
