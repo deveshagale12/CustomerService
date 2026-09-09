@@ -1,5017 +1,961 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Finova | Customer Dashboard</title>
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
-          rel="stylesheet">
-
-    <!-- Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-
-    <!-- Chart -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <style>
-
-        /* =========================================================
-           DESIGN SYSTEM
-        ========================================================= */
-
-        :root {
-            --emerald: #059669;
-            --emerald-dark: #047857;
-            --emerald-light: #d1fae5;
-
-            --navy: #0f172a;
-            --navy-2: #1e293b;
-
-            --gold: #f59e0b;
-            --gold-light: #fef3c7;
-
-            --background: #f8fafc;
-            --white: #ffffff;
-
-            --text: #0f172a;
-            --muted: #64748b;
-
-            --border: #e2e8f0;
-
-            --danger: #ef4444;
-            --success: #10b981;
-
-            --shadow:
-                0 10px 30px rgba(15, 23, 42, 0.07);
-
-            --shadow-lg:
-                0 20px 50px rgba(15, 23, 42, 0.12);
-
-            --radius: 20px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: "Inter", sans-serif;
-            background: var(--background);
-            color: var(--text);
-            min-height: 100vh;
-        }
-
-        button,
-        input,
-        select {
-            font-family: inherit;
-        }
-
-        button {
-            cursor: pointer;
-            border: none;
-        }
-
-        h1,
-        h2,
-        h3,
-        h4 {
-            font-family: "Plus Jakarta Sans", sans-serif;
-        }
-
-        /* =========================================================
-           APP
-        ========================================================= */
-
-        .app {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* =========================================================
-           SIDEBAR
-        ========================================================= */
-
-        .sidebar {
-            width: 260px;
-            position: fixed;
-            inset: 0 auto 0 0;
-            background: var(--navy);
-            color: white;
-            padding: 25px 18px;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            transition: transform .3s ease;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 10px 30px;
-        }
-
-        .brand-logo {
-            width: 42px;
-            height: 42px;
-            border-radius: 14px;
-            background:
-                linear-gradient(135deg,
-                var(--emerald),
-                #34d399);
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow:
-                0 10px 25px rgba(5,150,105,.35);
-
-            animation: logoPulse 3s infinite;
-        }
-
-        .brand-logo i {
-            width: 22px;
-            height: 22px;
-        }
-
-        .brand-name {
-            font-size: 20px;
-            font-weight: 800;
-        }
-
-        @keyframes logoPulse {
-            0%,100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-        }
-
-        .nav {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-        }
-
-        .nav-item {
-            width: 100%;
-            padding: 13px 15px;
-            border-radius: 13px;
-            color: #94a3b8;
-            background: transparent;
-
-            display: flex;
-            align-items: center;
-            gap: 12px;
-
-            font-size: 14px;
-            font-weight: 600;
-
-            transition: .2s ease;
-            text-align: left;
-        }
-
-        .nav-item:hover {
-            color: white;
-            background: rgba(255,255,255,.07);
-            transform: translateX(3px);
-        }
-
-        .nav-item.active {
-            color: white;
-            background: linear-gradient(
-                135deg,
-                var(--emerald),
-                #047857
-            );
-            box-shadow:
-                0 10px 25px rgba(5,150,105,.25);
-        }
-
-        .sidebar-bottom {
-            margin-top: auto;
-        }
-
-        .customer-mini {
-            padding: 15px;
-            border-radius: 16px;
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.08);
-        }
-
-        .customer-mini-name {
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .customer-mini-number {
-            font-size: 11px;
-            color: #94a3b8;
-        }
-
-        /* =========================================================
-           MAIN
-        ========================================================= */
-
-        .main {
-            margin-left: 260px;
-            width: calc(100% - 260px);
-            min-height: 100vh;
-        }
-
-        /* =========================================================
-           TOPBAR
-        ========================================================= */
-
-        .topbar {
-            height: 76px;
-            padding: 0 35px;
-
-            background: rgba(248,250,252,.88);
-            backdrop-filter: blur(18px);
-
-            border-bottom: 1px solid rgba(226,232,240,.8);
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-
-        .mobile-menu {
-            display: none;
-            background: transparent;
-        }
-
-        .page-title {
-            font-size: 20px;
-            font-weight: 800;
-        }
-
-        .top-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .icon-btn {
-            width: 42px;
-            height: 42px;
-            border-radius: 13px;
-
-            background: white;
-            border: 1px solid var(--border);
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            transition: .2s ease;
-        }
-
-        .icon-btn:hover {
-            transform: scale(1.04);
-            box-shadow: var(--shadow);
-        }
-
-        .avatar {
-            width: 42px;
-            height: 42px;
-
-            border-radius: 50%;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    var(--emerald),
-                    #10b981
-                );
-
-            color: white;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-weight: 800;
-        }
-
-        /* =========================================================
-           CONTENT
-        ========================================================= */
-
-        .content {
-            padding: 35px;
-            max-width: 1600px;
-            margin: auto;
-        }
-
-        .screen {
-            display: none;
-            animation: pageIn .35s ease;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        @keyframes pageIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* =========================================================
-           WELCOME
-        ========================================================= */
-
-        .welcome {
-            margin-bottom: 28px;
-        }
-
-        .welcome h1 {
-            font-size: 29px;
-            margin-bottom: 7px;
-        }
-
-        .welcome p {
-            color: var(--muted);
-            font-size: 14px;
-        }
-
-        /* =========================================================
-           CARDS
-        ========================================================= */
-
-        .card {
-            background: rgba(255,255,255,.88);
-            border: 1px solid rgba(226,232,240,.8);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-
-            transition:
-                transform .2s ease,
-                box-shadow .2s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .card-padding {
-            padding: 24px;
-        }
-
-        .grid {
-            display: grid;
-            gap: 20px;
-        }
-
-        .grid-4 {
-            grid-template-columns:
-                repeat(4, 1fr);
-        }
-
-        .grid-3 {
-            grid-template-columns:
-                repeat(3, 1fr);
-        }
-
-        .grid-2 {
-            grid-template-columns:
-                repeat(2, 1fr);
-        }
-
-        /* =========================================================
-           STAT CARDS
-        ========================================================= */
-
-        .stat-card {
-            padding: 22px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .stat-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 14px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .emerald-icon {
-            background: var(--emerald-light);
-            color: var(--emerald-dark);
-        }
-
-        .gold-icon {
-            background: var(--gold-light);
-            color: #b45309;
-        }
-
-        .blue-icon {
-            background: #dbeafe;
-            color: #2563eb;
-        }
-
-        .purple-icon {
-            background: #ede9fe;
-            color: #7c3aed;
-        }
-
-        .stat-label {
-            margin-top: 20px;
-            color: var(--muted);
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .stat-value {
-            margin-top: 5px;
-            font-size: 27px;
-            font-weight: 800;
-            font-family: "Plus Jakarta Sans";
-        }
-
-        /* =========================================================
-           CREDIT SCORE
-        ========================================================= */
-
-        .score-card {
-            padding: 25px;
-        }
-
-        .section-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .section-title h2 {
-            font-size: 17px;
-        }
-
-        .score-wrapper {
-            display: flex;
-            justify-content: center;
-            position: relative;
-        }
-
-        .score-svg {
-            width: 220px;
-            height: 130px;
-        }
-
-        .score-number {
-            position: absolute;
-            bottom: 2px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 32px;
-            font-weight: 800;
-        }
-
-        .score-status {
-            text-align: center;
-            margin-top: 8px;
-            color: var(--emerald);
-            font-weight: 700;
-            font-size: 13px;
-        }
-
-        /* =========================================================
-           LOAN CARD
-        ========================================================= */
-
-        .loan-card {
-            padding: 25px;
-            background:
-                linear-gradient(
-                    135deg,
-                    #0f172a,
-                    #12352e
-                );
-            color: white;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .loan-card::before {
-            content: "";
-            position: absolute;
-            width: 220px;
-            height: 220px;
-            border-radius: 50%;
-
-            right: -80px;
-            top: -80px;
-
-            background:
-                rgba(5,150,105,.18);
-        }
-
-        .loan-card-top {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .loan-label {
-            color: #94a3b8;
-            font-size: 12px;
-        }
-
-        .loan-name {
-            font-size: 20px;
-            margin-top: 6px;
-        }
-
-        .loan-status {
-            padding: 6px 10px;
-            background: rgba(16,185,129,.15);
-            color: #6ee7b7;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        .loan-progress {
-            margin-top: 28px;
-        }
-
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            color: #cbd5e1;
-            font-size: 12px;
-            margin-bottom: 9px;
-        }
-
-        .progress {
-            height: 8px;
-            background: rgba(255,255,255,.1);
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background:
-                linear-gradient(
-                    90deg,
-                    var(--emerald),
-                    #34d399
-                );
-            border-radius: inherit;
-        }
-
-        /* =========================================================
-           QUICK ACTIONS
-        ========================================================= */
-
-        .quick-action {
-            padding: 20px;
-            text-align: left;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 18px;
-
-            transition: .2s ease;
-        }
-
-        .quick-action:hover {
-            transform: scale(1.02);
-            box-shadow: var(--shadow);
-        }
-
-        .quick-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 14px;
-            background: var(--emerald-light);
-            color: var(--emerald-dark);
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            margin-bottom: 14px;
-        }
-
-        .quick-action strong {
-            display: block;
-            font-size: 14px;
-        }
-
-        .quick-action span {
-            display: block;
-            color: var(--muted);
-            font-size: 11px;
-            margin-top: 5px;
-        }
-
-        /* =========================================================
-           TRANSACTIONS
-        ========================================================= */
-
-        .transaction {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 14px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .transaction:last-child {
-            border-bottom: none;
-        }
-
-        .transaction-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 13px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .transaction-info {
-            flex: 1;
-        }
-
-        .transaction-name {
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .transaction-date {
-            font-size: 11px;
-            color: var(--muted);
-            margin-top: 3px;
-        }
-
-        .transaction-amount {
-            font-size: 13px;
-            font-weight: 800;
-        }
-
-        /* =========================================================
-           CALCULATOR
-        ========================================================= */
-
-        .calculator-layout {
-            display: grid;
-            grid-template-columns: 1.25fr .75fr;
-            gap: 24px;
-        }
-
-        .calculator {
-            padding: 28px;
-        }
-
-        .calculator-header h2 {
-            font-size: 22px;
-        }
-
-        .calculator-header p {
-            color: var(--muted);
-            font-size: 13px;
-            margin-top: 5px;
-        }
-
-        .calculator-field {
-            margin-top: 30px;
-        }
-
-        .field-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .field-label {
-            font-weight: 700;
-            font-size: 13px;
-        }
-
-        .field-value {
-            font-size: 20px;
-            color: var(--emerald-dark);
-            font-weight: 800;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            margin-top: 17px;
-            accent-color: var(--emerald);
-        }
-
-        .range-values {
-            display: flex;
-            justify-content: space-between;
-            color: var(--muted);
-            font-size: 11px;
-            margin-top: 7px;
-        }
-
-        .emi-card {
-            margin-top: 30px;
-            padding: 24px;
-            border-radius: 18px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    var(--emerald),
-                    #047857
-                );
-
-            color: white;
-        }
-
-        .emi-label {
-            font-size: 12px;
-            opacity: .8;
-        }
-
-        .emi-value {
-            font-size: 37px;
-            font-weight: 800;
-            margin-top: 7px;
-        }
-
-        .rate {
-            margin-top: 7px;
-            font-size: 12px;
-            opacity: .85;
-        }
-
-        .gold-button {
-            width: 100%;
-            margin-top: 20px;
-
-            padding: 15px 20px;
-
-            border-radius: 14px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #f59e0b,
-                    #fbbf24
-                );
-
-            color: #422006;
-            font-weight: 800;
-
-            box-shadow:
-                0 10px 25px rgba(245,158,11,.25);
-
-            transition: .2s ease;
-        }
-
-        .gold-button:hover {
-            transform: translateY(-2px);
-            box-shadow:
-                0 15px 30px rgba(245,158,11,.35);
-        }
-
-        .gold-button:active {
-            transform: scale(.97);
-        }
-
-        /* =========================================================
-           DONUT
-        ========================================================= */
-
-        .chart-card {
-            padding: 25px;
-        }
-
-        .donut-wrapper {
-            max-width: 300px;
-            margin: 20px auto;
-        }
-
-        .breakdown {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-        }
-
-        .breakdown-item {
-            text-align: center;
-        }
-
-        .breakdown-item span {
-            color: var(--muted);
-            font-size: 11px;
-        }
-
-        .breakdown-item strong {
-            display: block;
-            margin-top: 5px;
-        }
-
-        /* =========================================================
-           PROFILE
-        ========================================================= */
-
-        .profile-header {
-            padding: 28px;
-            display: flex;
-            align-items: center;
-            gap: 18px;
-        }
-
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 24px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    var(--emerald),
-                    #34d399
-                );
-
-            color: white;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 27px;
-            font-weight: 800;
-        }
-
-        .verified {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-
-            margin-top: 7px;
-
-            color: var(--emerald-dark);
-            background: var(--emerald-light);
-
-            padding: 5px 9px;
-            border-radius: 20px;
-
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        .details {
-            padding: 25px;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-
-            padding: 15px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-
-        .detail-label {
-            color: var(--muted);
-            font-size: 12px;
-        }
-
-        .detail-value {
-            font-size: 13px;
-            font-weight: 700;
-            text-align: right;
-        }
-
-        /* =========================================================
-           ADDRESS / CONTACT
-        ========================================================= */
-
-        .contact-card,
-        .address-card {
-            padding: 22px;
-        }
-
-        .contact-header,
-        .address-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 17px;
-        }
-
-        .badge {
-            padding: 5px 9px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 700;
-        }
-
-        .badge-success {
-            color: var(--emerald-dark);
-            background: var(--emerald-light);
-        }
-
-        .badge-primary {
-            color: #1d4ed8;
-            background: #dbeafe;
-        }
-
-        /* =========================================================
-           MODAL
-        ========================================================= */
-
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(15,23,42,.55);
-            backdrop-filter: blur(8px);
-
-            display: none;
-            align-items: center;
-            justify-content: center;
-
-            padding: 20px;
-            z-index: 1000;
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-content {
-            width: min(600px, 100%);
-            max-height: 90vh;
-            overflow-y: auto;
-
-            background: white;
-            border-radius: 24px;
-            padding: 28px;
-
-            animation: modalIn .25s ease;
-        }
-
-        @keyframes modalIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(.97);
-            }
-
-            to {
-                opacity: 1;
-                transform: none;
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-        }
-
-        .form-group.full {
-            grid-column: 1 / -1;
-        }
-
-        .form-group label {
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .form-group input,
-        .form-group select {
-            padding: 12px 13px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            outline: none;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            border-color: var(--emerald);
-            box-shadow:
-                0 0 0 3px rgba(5,150,105,.1);
-        }
-
-        .primary-button {
-            margin-top: 20px;
-            padding: 13px 18px;
-            border-radius: 13px;
-
-            background: var(--emerald);
-            color: white;
-
-            font-weight: 700;
-        }
-
-        /* =========================================================
-           TOAST
-        ========================================================= */
-
-        .toast {
-            position: fixed;
-            top: 90px;
-            right: 25px;
-
-            background: var(--navy);
-            color: white;
-
-            padding: 14px 18px;
-            border-radius: 13px;
-
-            display: none;
-            z-index: 2000;
-
-            box-shadow: var(--shadow-lg);
-        }
-
-        .toast.show {
-            display: block;
-            animation: toastIn .3s ease;
-        }
-
-        @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateY(-15px);
-            }
-
-            to {
-                opacity: 1;
-                transform: none;
-            }
-        }
-
-        /* =========================================================
-           MOBILE
-        ========================================================= */
-
-        @media (max-width: 1100px) {
-
-            .grid-4 {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .calculator-layout {
-                grid-template-columns: 1fr;
-            }
-
-        }
-
-        @media (max-width: 768px) {
-
-            .sidebar {
-                transform: translateX(-100%);
-            }
-
-            .sidebar.open {
-                transform: translateX(0);
-            }
-
-            .main {
-                margin-left: 0;
-                width: 100%;
-            }
-
-            .topbar {
-                padding: 0 16px;
-            }
-
-            .mobile-menu {
-                display: flex;
-                margin-right: 10px;
-            }
-
-            .content {
-                padding: 20px 15px 90px;
-            }
-
-            .page-title {
-                display: none;
-            }
-
-            .grid-4,
-            .grid-3,
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-
-            .welcome h1 {
-                font-size: 24px;
-            }
-
-            .stat-value {
-                font-size: 23px;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .form-group.full {
-                grid-column: auto;
-            }
-
-            .profile-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .detail-row {
-                flex-direction: column;
-                gap: 5px;
-            }
-
-            .detail-value {
-                text-align: left;
-            }
-
-            /* Mobile bottom navigation */
-
-            .mobile-nav {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-
-                height: 70px;
-
-                background:
-                    rgba(255,255,255,.94);
-
-                backdrop-filter: blur(18px);
-
-                border-top:
-                    1px solid var(--border);
-
-                display: flex;
-                align-items: center;
-                justify-content: space-around;
-
-                z-index: 90;
-            }
-
-            .mobile-nav button {
-                background: transparent;
-                color: var(--muted);
-
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 4px;
-
-                font-size: 10px;
-                font-weight: 600;
-            }
-
-            .mobile-nav button.active {
-                color: var(--emerald);
-            }
-
-            .mobile-nav i {
-                width: 20px;
-            }
-        }
-
-        @media (min-width: 769px) {
-
-            .mobile-nav {
-                display: none;
-            }
-
-        }
-
-        /* =========================================================
-           DARK MODE
-        ========================================================= */
-
-        body.dark {
-            --background: #020617;
-            --white: #0f172a;
-            --text: #f8fafc;
-            --muted: #94a3b8;
-            --border: #1e293b;
-        }
-
-        body.dark .topbar {
-            background: rgba(2,6,23,.88);
-        }
-
-        body.dark .card,
-        body.dark .quick-action,
-        body.dark .icon-btn,
-        body.dark .modal-content {
-            background: #0f172a;
-            border-color: #1e293b;
-        }
-
-        body.dark .mobile-nav {
-            background: rgba(15,23,42,.94);
-        }
-
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Customer Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --emerald:#059669;
+    --emerald-dark:#047857;
+    --navy:#0F172A;
+    --gold:#F59E0B;
+    --bg:#F8FAFC;
+    --card:#ffffff;
+    --border:#E2E8F0;
+    --muted:#64748B;
+    --radius:20px;
+  }
+  html.dark{
+    --bg:#0B1220;
+    --card:#111827;
+    --border:#1F2937;
+    --muted:#94A3B8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--navy);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    transition:background .3s ease, color .3s ease;
+  }
+  html.dark body{ color:#E2E8F0; }
+  h1,h2,h3,h4,.heading{ font-family:'Plus Jakarta Sans',sans-serif; }
+
+  /* ---- layout helpers ---- */
+  .glass{
+    background:color-mix(in srgb, var(--card) 92%, transparent);
+    backdrop-filter:blur(14px);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:0 8px 30px rgba(15,23,42,.06);
+  }
+  html.dark .glass{ box-shadow:0 8px 30px rgba(0,0,0,.35); }
+
+  .btn-primary{
+    background:linear-gradient(135deg,var(--emerald),var(--emerald-dark));
+    color:#fff; border:none; border-radius:14px;
+    padding:13px 22px; font-weight:600; font-size:14.5px;
+    cursor:pointer; transition:transform .15s ease, box-shadow .2s ease;
+    box-shadow:0 8px 20px rgba(5,150,105,.28);
+  }
+  .btn-primary:hover{ transform:translateY(-1px); box-shadow:0 12px 26px rgba(5,150,105,.35); }
+  .btn-primary:active{ transform:scale(.97); }
+  .btn-primary:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
+
+  .btn-gold{
+    background:linear-gradient(135deg,var(--gold),#D97706);
+    color:#1a1200; border:none; border-radius:14px;
+    padding:13px 22px; font-weight:700; font-size:14.5px;
+    cursor:pointer; transition:transform .15s ease;
+    box-shadow:0 8px 22px rgba(245,158,11,.35);
+    animation:pulseGold 2.6s ease-in-out infinite;
+  }
+  .btn-gold:active{ transform:scale(.97); }
+  @keyframes pulseGold{
+    0%,100%{ box-shadow:0 8px 22px rgba(245,158,11,.35); }
+    50%{ box-shadow:0 8px 30px rgba(245,158,11,.6); }
+  }
+
+  .btn-ghost{
+    background:transparent; border:1px solid var(--border); color:var(--navy);
+    border-radius:14px; padding:12px 20px; font-weight:600; font-size:14.5px; cursor:pointer;
+    transition:background .2s ease, transform .15s ease;
+  }
+  html.dark .btn-ghost{ color:#E2E8F0; }
+  .btn-ghost:hover{ background:rgba(5,150,105,.08); }
+  .btn-ghost:active{ transform:scale(.97); }
+
+  .field{
+    position:relative; margin-bottom:20px;
+  }
+  .field input, .field select{
+    width:100%; padding:16px 14px 8px 14px; border-radius:14px;
+    border:1.5px solid var(--border); background:var(--card); color:inherit;
+    font-size:15px; font-family:'Inter',sans-serif; outline:none;
+    transition:border-color .2s ease, box-shadow .2s ease;
+  }
+  .field input:focus, .field select:focus{
+    border-color:var(--emerald);
+    box-shadow:0 0 0 4px rgba(5,150,105,.15);
+  }
+  .field label{
+    position:absolute; left:14px; top:16px; font-size:15px; color:var(--muted);
+    pointer-events:none; transition:all .18s ease; background:transparent;
+  }
+  .field input:focus + label,
+  .field input:not(:placeholder-shown) + label,
+  .field select:focus + label,
+  .field.has-value select + label{
+    top:6px; font-size:11px; font-weight:600; color:var(--emerald); letter-spacing:.02em;
+  }
+  .field.shake{ animation:shake .4s ease; }
+  @keyframes shake{
+    0%,100%{ transform:translateX(0); }
+    20%{ transform:translateX(-8px); }
+    40%{ transform:translateX(8px); }
+    60%{ transform:translateX(-6px); }
+    80%{ transform:translateX(6px); }
+  }
+
+  .otp-box{
+    width:46px; height:54px; text-align:center; font-size:20px; font-weight:700;
+    border-radius:12px; border:1.5px solid var(--border); background:var(--card); color:inherit;
+  }
+  .otp-box:focus{ outline:none; border-color:var(--emerald); box-shadow:0 0 0 4px rgba(5,150,105,.15); }
+
+  .fade-slide{ animation:fadeSlide .45s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes fadeSlide{ from{ opacity:0; transform:translateY(16px);} to{ opacity:1; transform:translateY(0);} }
+
+  .stagger > *{ opacity:0; animation:fadeSlide .5s cubic-bezier(.16,1,.3,1) forwards; }
+
+  .scale-tap{ transition:transform .15s ease; }
+  .scale-tap:hover{ transform:scale(1.02); }
+  .scale-tap:active{ transform:scale(.97); }
+
+  .toast{
+    animation:toastIn .35s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes toastIn{ from{ opacity:0; transform:translate(-50%,-14px);} to{ opacity:1; transform:translate(-50%,0);} }
+
+  .spinner{
+    width:18px;height:18px;border-radius:50%;
+    border:2.5px solid rgba(255,255,255,.4); border-top-color:#fff;
+    animation:spin .7s linear infinite; display:inline-block;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .status-dot{ width:8px; height:8px; border-radius:50%; display:inline-block; }
+
+  .nav-pill{
+    position:relative;
+  }
+  .nav-pill.active::after{
+    content:''; position:absolute; inset:0; background:rgba(5,150,105,.12);
+    border-radius:12px; z-index:-1; animation:pillIn .25s ease;
+  }
+  @keyframes pillIn{ from{ opacity:0; transform:scale(.85);} to{ opacity:1; transform:scale(1);} }
+
+  .skeleton{
+    background:linear-gradient(90deg, rgba(148,163,184,.15) 25%, rgba(148,163,184,.3) 37%, rgba(148,163,184,.15) 63%);
+    background-size:400% 100%;
+    animation:shimmer 1.4s ease infinite;
+    border-radius:12px;
+  }
+  @keyframes shimmer{ 0%{background-position:100% 0;} 100%{background-position:-100% 0;} }
+
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb{ background:var(--border); border-radius:8px; }
+
+  .blob{
+    position:absolute; border-radius:50%; filter:blur(60px); opacity:.35; pointer-events:none;
+  }
+
+  .avatar-ring{
+    background:conic-gradient(from 0deg, var(--emerald), var(--gold), var(--emerald));
+    padding:2.5px; border-radius:50%;
+  }
+
+  [data-view]{ display:none; }
+  [data-view].active{ display:block; }
+
+  .sun-moon{ transition:transform .4s cubic-bezier(.34,1.56,.64,1), opacity .3s ease; }
+</style>
+
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body>
+<body class="min-h-screen">
 
-<div class="app">
+<!-- ============ TOAST ============ -->
+<div id="toastWrap" class="fixed top-5 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 items-center"></div>
 
-    <!-- =========================================================
-         SIDEBAR
-    ========================================================== -->
+<!-- ============ LOGIN VIEW ============ -->
+<section data-view="login" class="active min-h-screen flex items-center justify-center px-4 py-10 relative overflow-hidden">
+  <div class="blob w-72 h-72 bg-emerald-400 -top-10 -left-10"></div>
+  <div class="blob w-72 h-72 bg-amber-400 bottom-0 right-0"></div>
 
-    <aside class="sidebar" id="sidebar">
-
-        <div class="brand">
-
-            <div class="brand-logo">
-                <i data-lucide="landmark"></i>
-            </div>
-
-            <div class="brand-name">
-                Finova
-            </div>
-
+  <div class="relative z-10 w-full max-w-4xl grid md:grid-cols-2 rounded-[28px] overflow-hidden shadow-2xl">
+    <!-- left brand panel -->
+    <div class="hidden md:flex flex-col justify-between p-10" style="background:linear-gradient(155deg,#0F172A,#064E3B);">
+      <div>
+        <div class="flex items-center gap-2 text-white">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path id="logoStroke" d="M4 14 L9 9 L13 13 L20 5" stroke="#F59E0B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="40" stroke-dashoffset="40"/></svg>
+          <span class="heading font-bold text-lg">Nimbus Finance</span>
         </div>
-
-        <nav class="nav">
-
-            <button class="nav-item active"
-                    data-screen="dashboard">
-
-                <i data-lucide="layout-dashboard"></i>
-                Dashboard
-
-            </button>
-
-            <button class="nav-item"
-                    data-screen="calculator">
-
-                <i data-lucide="calculator"></i>
-                Loan Calculator
-
-            </button>
-
-            <button class="nav-item"
-                    data-screen="loans">
-
-                <i data-lucide="banknote"></i>
-                My Loans
-
-            </button>
-
-            <button class="nav-item"
-                    data-screen="transactions">
-
-                <i data-lucide="receipt"></i>
-                Transactions
-
-            </button>
-
-            <button class="nav-item"
-                    data-screen="credit">
-
-                <i data-lucide="gauge"></i>
-                Credit Score
-
-            </button>
-
-            <button class="nav-item"
-                    data-screen="profile">
-
-                <i data-lucide="user-round"></i>
-                My Profile
-
-            </button>
-
-            <button class="nav-item"
-                    data-screen="support">
-
-                <i data-lucide="headphones"></i>
-                Support
-
-            </button>
-
-        </nav>
-
-        <div class="sidebar-bottom">
-
-            <div class="customer-mini">
-
-                <div class="customer-mini-name"
-                     id="sidebarCustomerName">
-                    Customer
-                </div>
-
-                <div class="customer-mini-number"
-                     id="sidebarCustomerNumber">
-                    Loading...
-                </div>
-
-            </div>
-
-        </div>
-
-    </aside>
-
-
-    <!-- =========================================================
-         MAIN
-    ========================================================== -->
-
-    <main class="main">
-
-        <!-- TOPBAR -->
-
-        <header class="topbar">
-
-            <div style="display:flex;align-items:center;">
-
-                <button class="icon-btn mobile-menu"
-                        id="mobileMenu">
-
-                    <i data-lucide="menu"></i>
-
-                </button>
-
-                <div class="page-title"
-                     id="pageTitle">
-
-                    Dashboard
-
-                </div>
-
-            </div>
-
-            <div class="top-actions">
-
-                <button class="icon-btn"
-                        id="darkToggle"
-                        aria-label="Toggle dark mode">
-
-                    <i data-lucide="moon"></i>
-
-                </button>
-
-                <button class="icon-btn"
-                        onclick="showToast('No new notifications')">
-
-                    <i data-lucide="bell"></i>
-
-                </button>
-
-                <div class="avatar"
-                     id="topAvatar">
-                    C
-                </div>
-
-            </div>
-
-        </header>
-
-
-        <!-- =====================================================
-             CONTENT
-        ====================================================== -->
-
-        <section class="content">
-
-
-            <!-- =================================================
-                 DASHBOARD
-            ================================================== -->
-
-            <div class="screen active"
-                 id="dashboard">
-
-                <div class="welcome">
-
-                    <h1>
-                        Good morning,
-                        <span id="welcomeName">
-                            Customer
-                        </span> 👋
-                    </h1>
-
-                    <p>
-                        Here's your financial overview for today.
-                    </p>
-
-                </div>
-
-
-                <!-- STAT CARDS -->
-
-                <div class="grid grid-4">
-
-                    <div class="card stat-card">
-
-                        <div class="stat-top">
-
-                            <div class="stat-icon emerald-icon">
-                                <i data-lucide="wallet"></i>
-                            </div>
-
-                            <span style="color:#10b981;font-size:11px;">
-                                +8.4%
-                            </span>
-
-                        </div>
-
-                        <div class="stat-label">
-                            Available Credit
-                        </div>
-
-                        <div class="stat-value"
-                             id="availableCredit">
-                            ₹0
-                        </div>
-
-                    </div>
-
-
-                    <div class="card stat-card">
-
-                        <div class="stat-top">
-
-                            <div class="stat-icon gold-icon">
-                                <i data-lucide="banknote"></i>
-                            </div>
-
-                        </div>
-
-                        <div class="stat-label">
-                            Outstanding Loan
-                        </div>
-
-                        <div class="stat-value">
-                            ₹2,40,000
-                        </div>
-
-                    </div>
-
-
-                    <div class="card stat-card">
-
-                        <div class="stat-top">
-
-                            <div class="stat-icon blue-icon">
-                                <i data-lucide="calendar-clock"></i>
-                            </div>
-
-                        </div>
-
-                        <div class="stat-label">
-                            Next EMI
-                        </div>
-
-                        <div class="stat-value">
-                            ₹8,450
-                        </div>
-
-                    </div>
-
-
-                    <div class="card stat-card">
-
-                        <div class="stat-top">
-
-                            <div class="stat-icon purple-icon">
-                                <i data-lucide="trending-up"></i>
-                            </div>
-
-                        </div>
-
-                        <div class="stat-label">
-                            Total Repaid
-                        </div>
-
-                        <div class="stat-value">
-                            ₹1.26L
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <br>
-
-
-                <!-- MAIN DASHBOARD GRID -->
-
-                <div class="grid grid-2">
-
-                    <!-- CREDIT SCORE -->
-
-                    <div class="card score-card">
-
-                        <div class="section-title">
-
-                            <h2>
-                                Credit Score
-                            </h2>
-
-                            <button class="icon-btn"
-                                    onclick="openScreen('credit')">
-
-                                <i data-lucide="arrow-up-right"></i>
-
-                            </button>
-
-                        </div>
-
-                        <div class="score-wrapper">
-
-                            <svg class="score-svg"
-                                 viewBox="0 0 220 130">
-
-                                <path
-                                    d="M20 110 A90 90 0 0 1 200 110"
-                                    fill="none"
-                                    stroke="#e2e8f0"
-                                    stroke-width="15"
-                                    stroke-linecap="round"/>
-
-                                <path
-                                    id="scoreArc"
-                                    d="M20 110 A90 90 0 0 1 200 110"
-                                    fill="none"
-                                    stroke="#059669"
-                                    stroke-width="15"
-                                    stroke-linecap="round"
-                                    stroke-dasharray="283"
-                                    stroke-dashoffset="283"/>
-
-                            </svg>
-
-                            <div class="score-number"
-                                 id="scoreNumber">
-                                0
-                            </div>
-
-                        </div>
-
-                        <div class="score-status">
-                            Excellent
-                        </div>
-
-                    </div>
-
-
-                    <!-- ACTIVE LOAN -->
-
-                    <div class="loan-card card">
-
-                        <div class="loan-card-top">
-
-                            <div>
-
-                                <div class="loan-label">
-                                    Active Loan
-                                </div>
-
-                                <div class="loan-name">
-                                    Personal Loan
-                                </div>
-
-                            </div>
-
-                            <div class="loan-status">
-                                ACTIVE
-                            </div>
-
-                        </div>
-
-
-                        <div class="loan-progress">
-
-                            <div class="progress-header">
-
-                                <span>
-                                    Repayment progress
-                                </span>
-
-                                <strong>
-                                    62%
-                                </strong>
-
-                            </div>
-
-                            <div class="progress">
-
-                                <div class="progress-bar"
-                                     style="width:62%">
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <div style="
-                            display:flex;
-                            justify-content:space-between;
-                            margin-top:25px;
-                        ">
-
-                            <div>
-
-                                <div class="loan-label">
-                                    Remaining
-                                </div>
-
-                                <strong>
-                                    ₹2,40,000
-                                </strong>
-
-                            </div>
-
-                            <div style="text-align:right">
-
-                                <div class="loan-label">
-                                    Next EMI
-                                </div>
-
-                                <strong>
-                                    ₹8,450
-                                </strong>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <br>
-
-
-                <!-- QUICK ACTIONS -->
-
-                <div class="card card-padding">
-
-                    <div class="section-title">
-
-                        <h2>
-                            Quick Actions
-                        </h2>
-
-                    </div>
-
-                    <div class="grid grid-4">
-
-                        <button class="quick-action"
-                                onclick="openScreen('calculator')">
-
-                            <div class="quick-icon">
-                                <i data-lucide="plus"></i>
-                            </div>
-
-                            <strong>
-                                Apply Loan
-                            </strong>
-
-                            <span>
-                                Check your EMI
-                            </span>
-
-                        </button>
-
-
-                        <button class="quick-action"
-                                onclick="showToast('Repayment module coming next')">
-
-                            <div class="quick-icon">
-                                <i data-lucide="credit-card"></i>
-                            </div>
-
-                            <strong>
-                                Repay
-                            </strong>
-
-                            <span>
-                                Pay your EMI
-                            </span>
-
-                        </button>
-
-
-                        <button class="quick-action"
-                                onclick="openScreen('transactions')">
-
-                            <div class="quick-icon">
-                                <i data-lucide="history"></i>
-                            </div>
-
-                            <strong>
-                                History
-                            </strong>
-
-                            <span>
-                                View transactions
-                            </span>
-
-                        </button>
-
-
-                        <button class="quick-action"
-                                onclick="openScreen('support')">
-
-                            <div class="quick-icon">
-                                <i data-lucide="message-circle"></i>
-                            </div>
-
-                            <strong>
-                                Support
-                            </strong>
-
-                            <span>
-                                Talk to us
-                            </span>
-
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <br>
-
-
-                <!-- CHART + TRANSACTIONS -->
-
-                <div class="grid grid-2">
-
-                    <div class="card chart-card">
-
-                        <div class="section-title">
-
-                            <h2>
-                                Monthly Spending
-                            </h2>
-
-                            <span style="
-                                font-size:11px;
-                                color:var(--muted);
-                            ">
-                                2026
-                            </span>
-
-                        </div>
-
-                        <canvas id="spendingChart"
-                                height="150">
-                        </canvas>
-
-                    </div>
-
-
-                    <div class="card card-padding">
-
-                        <div class="section-title">
-
-                            <h2>
-                                Recent Transactions
-                            </h2>
-
-                            <button
-                                onclick="openScreen('transactions')"
-                                style="
-                                background:none;
-                                color:var(--emerald);
-                                font-size:12px;
-                                font-weight:700;
-                                ">
-                                View all
-                            </button>
-
-                        </div>
-
-
-                        <div class="transaction">
-
-                            <div class="transaction-icon emerald-icon">
-                                <i data-lucide="arrow-down-left"></i>
-                            </div>
-
-                            <div class="transaction-info">
-
-                                <div class="transaction-name">
-                                    EMI Payment
-                                </div>
-
-                                <div class="transaction-date">
-                                    05 Sep 2026
-                                </div>
-
-                            </div>
-
-                            <div class="transaction-amount">
-                                -₹8,450
-                            </div>
-
-                        </div>
-
-
-                        <div class="transaction">
-
-                            <div class="transaction-icon blue-icon">
-                                <i data-lucide="shopping-bag"></i>
-                            </div>
-
-                            <div class="transaction-info">
-
-                                <div class="transaction-name">
-                                    Online Purchase
-                                </div>
-
-                                <div class="transaction-date">
-                                    02 Sep 2026
-                                </div>
-
-                            </div>
-
-                            <div class="transaction-amount">
-                                -₹3,240
-                            </div>
-
-                        </div>
-
-
-                        <div class="transaction">
-
-                            <div class="transaction-icon gold-icon">
-                                <i data-lucide="arrow-down"></i>
-                            </div>
-
-                            <div class="transaction-info">
-
-                                <div class="transaction-name">
-                                    Salary Credit
-                                </div>
-
-                                <div class="transaction-date">
-                                    01 Sep 2026
-                                </div>
-
-                            </div>
-
-                            <div class="transaction-amount"
-                                 style="color:var(--success)">
-                                +₹42,000
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- =================================================
-                 CALCULATOR
-            ================================================== -->
-
-            <div class="screen"
-                 id="calculator">
-
-                <div class="welcome">
-
-                    <h1>
-                        Loan Calculator
-                    </h1>
-
-                    <p>
-                        Calculate your estimated monthly EMI before applying.
-                    </p>
-
-                </div>
-
-
-                <div class="calculator-layout">
-
-                    <div class="card calculator">
-
-                        <div class="calculator-header">
-
-                            <h2>
-                                Find your perfect loan
-                            </h2>
-
-                            <p>
-                                Adjust the amount and duration to see
-                                real-time EMI calculations.
-                            </p>
-
-                        </div>
-
-
-                        <!-- AMOUNT -->
-
-                        <div class="calculator-field">
-
-                            <div class="field-header">
-
-                                <span class="field-label">
-                                    Loan Amount
-                                </span>
-
-                                <span class="field-value"
-                                      id="amountValue">
-                                    ₹5,00,000
-                                </span>
-
-                            </div>
-
-                            <input
-                                type="range"
-                                id="amountSlider"
-                                min="50000"
-                                max="5000000"
-                                step="10000"
-                                value="500000">
-
-                            <div class="range-values">
-
-                                <span>
-                                    ₹50K
-                                </span>
-
-                                <span>
-                                    ₹50L
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- DURATION -->
-
-                        <div class="calculator-field">
-
-                            <div class="field-header">
-
-                                <span class="field-label">
-                                    Duration
-                                </span>
-
-                                <span class="field-value"
-                                      id="durationValue">
-                                    60 Months
-                                </span>
-
-                            </div>
-
-                            <input
-                                type="range"
-                                id="durationSlider"
-                                min="3"
-                                max="60"
-                                step="1"
-                                value="60">
-
-                            <div class="range-values">
-
-                                <span>
-                                    3 Months
-                                </span>
-
-                                <span>
-                                    60 Months
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- INTEREST -->
-
-                        <div class="calculator-field">
-
-                            <div class="field-header">
-
-                                <span class="field-label">
-                                    Interest Rate
-                                </span>
-
-                                <span class="field-value">
-                                    10.50% p.a.
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- EMI -->
-
-                        <div class="emi-card">
-
-                            <div class="emi-label">
-                                Estimated Monthly EMI
-                            </div>
-
-                            <div class="emi-value"
-                                 id="emiValue">
-                                ₹0
-                            </div>
-
-                            <div class="rate">
-                                Interest calculated at 10.50% p.a.
-                            </div>
-
-                            <button class="gold-button"
-                                    onclick="showToast('Loan application flow will be connected next')">
-
-                                Apply Now
-                                <i data-lucide="arrow-right"
-                                   style="width:16px;vertical-align:middle">
-                                </i>
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- DONUT -->
-
-                    <div class="card chart-card">
-
-                        <div class="section-title">
-
-                            <h2>
-                                Payment Breakdown
-                            </h2>
-
-                        </div>
-
-                        <div class="donut-wrapper">
-
-                            <canvas id="loanDonut">
-                            </canvas>
-
-                        </div>
-
-                        <div class="breakdown">
-
-                            <div class="breakdown-item">
-
-                                <span>
-                                    Principal
-                                </span>
-
-                                <strong id="principalText">
-                                    ₹5,00,000
-                                </strong>
-
-                            </div>
-
-                            <div class="breakdown-item">
-
-                                <span>
-                                    Interest
-                                </span>
-
-                                <strong id="interestText">
-                                    ₹0
-                                </strong>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- =================================================
-                 LOANS
-            ================================================== -->
-
-            <div class="screen"
-                 id="loans">
-
-                <div class="welcome">
-
-                    <h1>
-                        My Loans
-                    </h1>
-
-                    <p>
-                        Track your active and previous loans.
-                    </p>
-
-                </div>
-
-                <div class="card loan-card"
-                     style="max-width:700px">
-
-                    <div class="loan-card-top">
-
-                        <div>
-
-                            <div class="loan-label">
-                                Personal Loan
-                            </div>
-
-                            <div class="loan-name">
-                                LN-2026-00124
-                            </div>
-
-                        </div>
-
-                        <div class="loan-status">
-                            ACTIVE
-                        </div>
-
-                    </div>
-
-                    <div style="
-                        margin-top:25px;
-                        display:grid;
-                        grid-template-columns:repeat(3,1fr);
-                        gap:20px;
-                    ">
-
-                        <div>
-                            <div class="loan-label">
-                                Principal
-                            </div>
-                            <strong>
-                                ₹5,00,000
-                            </strong>
-                        </div>
-
-                        <div>
-                            <div class="loan-label">
-                                EMI
-                            </div>
-                            <strong>
-                                ₹8,450
-                            </strong>
-                        </div>
-
-                        <div>
-                            <div class="loan-label">
-                                Remaining
-                            </div>
-                            <strong>
-                                ₹2,40,000
-                            </strong>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- =================================================
-                 TRANSACTIONS
-            ================================================== -->
-
-            <div class="screen"
-                 id="transactions">
-
-                <div class="welcome">
-
-                    <h1>
-                        Transactions
-                    </h1>
-
-                    <p>
-                        Your recent financial activity.
-                    </p>
-
-                </div>
-
-                <div class="card card-padding">
-
-                    <div class="transaction">
-                        <div class="transaction-icon emerald-icon">
-                            <i data-lucide="arrow-down-left"></i>
-                        </div>
-
-                        <div class="transaction-info">
-                            <div class="transaction-name">
-                                EMI Payment
-                            </div>
-                            <div class="transaction-date">
-                                05 Sep 2026
-                            </div>
-                        </div>
-
-                        <div class="transaction-amount">
-                            -₹8,450
-                        </div>
-                    </div>
-
-                    <div class="transaction">
-                        <div class="transaction-icon blue-icon">
-                            <i data-lucide="shopping-bag"></i>
-                        </div>
-
-                        <div class="transaction-info">
-                            <div class="transaction-name">
-                                Online Purchase
-                            </div>
-                            <div class="transaction-date">
-                                02 Sep 2026
-                            </div>
-                        </div>
-
-                        <div class="transaction-amount">
-                            -₹3,240
-                        </div>
-                    </div>
-
-                    <div class="transaction">
-                        <div class="transaction-icon gold-icon">
-                            <i data-lucide="arrow-down"></i>
-                        </div>
-
-                        <div class="transaction-info">
-                            <div class="transaction-name">
-                                Salary Credit
-                            </div>
-                            <div class="transaction-date">
-                                01 Sep 2026
-                            </div>
-                        </div>
-
-                        <div class="transaction-amount"
-                             style="color:var(--success)">
-                            +₹42,000
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- =================================================
-                 CREDIT SCORE
-            ================================================== -->
-
-            <div class="screen"
-                 id="credit">
-
-                <div class="welcome">
-
-                    <h1>
-                        Credit Score
-                    </h1>
-
-                    <p>
-                        Understand the factors affecting your score.
-                    </p>
-
-                </div>
-
-                <div class="grid grid-2">
-
-                    <div class="card score-card">
-
-                        <div class="section-title">
-                            <h2>
-                                Your Score
-                            </h2>
-                        </div>
-
-                        <div class="score-wrapper">
-
-                            <svg class="score-svg"
-                                 viewBox="0 0 220 130">
-
-                                <path
-                                    d="M20 110 A90 90 0 0 1 200 110"
-                                    fill="none"
-                                    stroke="#e2e8f0"
-                                    stroke-width="15"
-                                    stroke-linecap="round"/>
-
-                                <path
-                                    d="M20 110 A90 90 0 0 1 200 110"
-                                    fill="none"
-                                    stroke="#059669"
-                                    stroke-width="15"
-                                    stroke-linecap="round"
-                                    stroke-dasharray="283"
-                                    stroke-dashoffset="0"/>
-
-                            </svg>
-
-                            <div class="score-number">
-                                720
-                            </div>
-
-                        </div>
-
-                        <div class="score-status">
-                            Excellent
-                        </div>
-
-                    </div>
-
-
-                    <div class="card card-padding">
-
-                        <div class="section-title">
-                            <h2>
-                                Score Factors
-                            </h2>
-                        </div>
-
-                        <div style="margin-bottom:22px">
-
-                            <div class="progress-header"
-                                 style="color:var(--text)">
-                                <span>
-                                    Payment History
-                                </span>
-                                <strong>
-                                    95%
-                                </strong>
-                            </div>
-
-                            <div class="progress"
-                                 style="background:#e2e8f0">
-
-                                <div class="progress-bar"
-                                     style="width:95%">
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <div style="margin-bottom:22px">
-
-                            <div class="progress-header"
-                                 style="color:var(--text)">
-                                <span>
-                                    Credit Utilization
-                                </span>
-                                <strong>
-                                    82%
-                                </strong>
-                            </div>
-
-                            <div class="progress"
-                                 style="background:#e2e8f0">
-
-                                <div class="progress-bar"
-                                     style="width:82%">
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <div>
-
-                            <div class="progress-header"
-                                 style="color:var(--text)">
-                                <span>
-                                    Account Age
-                                </span>
-                                <strong>
-                                    75%
-                                </strong>
-                            </div>
-
-                            <div class="progress"
-                                 style="background:#e2e8f0">
-
-                                <div class="progress-bar"
-                                     style="width:75%">
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- =================================================
-                 PROFILE
-            ================================================== -->
-
-            <div class="screen"
-                 id="profile">
-
-                <div class="welcome">
-
-                    <h1>
-                        My Profile
-                    </h1>
-
-                    <p>
-                        Manage your personal information and account details.
-                    </p>
-
-                </div>
-
-
-                <!-- CUSTOMER -->
-
-                <div class="card profile-header">
-
-                    <div class="profile-avatar"
-                         id="profileAvatar">
-                        C
-                    </div>
-
-                    <div>
-
-                        <h2 id="profileName">
-                            Customer
-                        </h2>
-
-                        <p id="profileEmail"
-                           style="
-                           color:var(--muted);
-                           margin-top:5px;
-                           font-size:13px;
-                           ">
-                            Loading...
-                        </p>
-
-                        <div class="verified">
-
-                            <i data-lucide="badge-check"
-                               style="width:14px">
-                            </i>
-
-                            Customer Profile
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <br>
-
-
-                <!-- CUSTOMER DETAILS -->
-
-                <div class="card details">
-
-                    <div class="section-title">
-
-                        <h2>
-                            Personal Information
-                        </h2>
-
-                        <button class="primary-button"
-                                style="margin:0"
-                                onclick="openCustomerEdit()">
-
-                            <i data-lucide="pencil"
-                               style="width:14px;vertical-align:middle">
-                            </i>
-
-                            Edit
-
-                        </button>
-
-                    </div>
-
-
-                    <div class="detail-row">
-
-                        <span class="detail-label">
-                            Customer Number
-                        </span>
-
-                        <span class="detail-value"
-                              id="detailCustomerNumber">
-                            -
-                        </span>
-
-                    </div>
-
-
-                    <div class="detail-row">
-
-                        <span class="detail-label">
-                            Full Name
-                        </span>
-
-                        <span class="detail-value"
-                              id="detailName">
-                            -
-                        </span>
-
-                    </div>
-
-
-                    <div class="detail-row">
-
-                        <span class="detail-label">
-                            Date of Birth
-                        </span>
-
-                        <span class="detail-value"
-                              id="detailDob">
-                            -
-                        </span>
-
-                    </div>
-
-
-                    <div class="detail-row">
-
-                        <span class="detail-label">
-                            Gender
-                        </span>
-
-                        <span class="detail-value"
-                              id="detailGender">
-                            -
-                        </span>
-
-                    </div>
-
-
-                    <div class="detail-row">
-
-                        <span class="detail-label">
-                            Email
-                        </span>
-
-                        <span class="detail-value"
-                              id="detailEmail">
-                            -
-                        </span>
-
-                    </div>
-
-
-                    <div class="detail-row">
-
-                        <span class="detail-label">
-                            Mobile
-                        </span>
-
-                        <span class="detail-value"
-                              id="detailMobile">
-                            -
-                        </span>
-
-                    </div>
-
-
-                    <div class="detail-row">
-
-                        <span class="detail-label">
-                            Customer Type
-                        </span>
-
-                        <span class="detail-value"
-                              id="detailType">
-                            -
-                        </span>
-
-                    </div>
-
-
-                    <div class="detail-row">
-
-                        <span class="detail-label">
-                            Account Status
-                        </span>
-
-                        <span class="detail-value"
-                              id="detailStatus">
-                            -
-                        </span>
-
-                    </div>
-
-
-                    <div class="detail-row">
-
-                        <span class="detail-label">
-                            Created At
-                        </span>
-
-                        <span class="detail-value"
-                              id="detailCreated">
-                            -
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <br>
-
-
-                <!-- CONTACTS -->
-
-                <div class="card card-padding">
-
-                    <div class="section-title">
-
-                        <h2>
-                            Contact Information
-                        </h2>
-
-                        <button class="primary-button"
-                                style="margin:0"
-                                onclick="openContactModal()">
-
-                            <i data-lucide="plus"
-                               style="width:14px;vertical-align:middle">
-                            </i>
-
-                            Add Contact
-
-                        </button>
-
-                    </div>
-
-                    <div id="contactsContainer">
-
-                        Loading contacts...
-
-                    </div>
-
-                </div>
-
-
-                <br>
-
-
-                <!-- ADDRESSES -->
-
-                <div class="card card-padding">
-
-                    <div class="section-title">
-
-                        <h2>
-                            Addresses
-                        </h2>
-
-                        <button class="primary-button"
-                                style="margin:0"
-                                onclick="openAddressModal()">
-
-                            <i data-lucide="plus"
-                               style="width:14px;vertical-align:middle">
-                            </i>
-
-                            Add Address
-
-                        </button>
-
-                    </div>
-
-                    <div id="addressesContainer">
-
-                        Loading addresses...
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- =================================================
-                 SUPPORT
-            ================================================== -->
-
-            <div class="screen"
-                 id="support">
-
-                <div class="welcome">
-
-                    <h1>
-                        Support
-                    </h1>
-
-                    <p>
-                        We're here to help with your financial journey.
-                    </p>
-
-                </div>
-
-                <div class="card card-padding"
-                     style="max-width:600px">
-
-                    <div class="quick-icon">
-                        <i data-lucide="headphones"></i>
-                    </div>
-
-                    <h2>
-                        Need assistance?
-                    </h2>
-
-                    <p style="
-                        color:var(--muted);
-                        font-size:13px;
-                        margin-top:7px;
-                    ">
-                        Our support team can help you with loans,
-                        repayments, profile and account issues.
-                    </p>
-
-                    <button class="gold-button"
-                            style="margin-top:20px"
-                            onclick="showToast('Support chat will open soon')">
-
-                        Start Support Chat
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-    </main>
-
-</div>
-
-
-<!-- =============================================================
-     MOBILE NAVIGATION
-============================================================== -->
-
-<nav class="mobile-nav">
-
-    <button class="active"
-            data-screen="dashboard">
-
-        <i data-lucide="home"></i>
-        Home
-
-    </button>
-
-    <button data-screen="calculator">
-
-        <i data-lucide="calculator"></i>
-        Calculator
-
-    </button>
-
-    <button data-screen="loans">
-
-        <i data-lucide="banknote"></i>
-        Loans
-
-    </button>
-
-    <button data-screen="transactions">
-
-        <i data-lucide="receipt"></i>
-        History
-
-    </button>
-
-    <button data-screen="profile">
-
-        <i data-lucide="user"></i>
-        Profile
-
-    </button>
-
-</nav>
-
-
-<!-- =============================================================
-     CUSTOMER EDIT MODAL
-============================================================== -->
-
-<div class="modal"
-     id="customerModal">
-
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <h2>
-                Edit Profile
-            </h2>
-
-            <button class="icon-btn"
-                    onclick="closeModal('customerModal')">
-
-                <i data-lucide="x"></i>
-
-            </button>
-
-        </div>
-
-
-        <form id="customerForm">
-
-            <div class="form-grid">
-
-                <div class="form-group">
-
-                    <label>
-                        First Name
-                    </label>
-
-                    <input id="firstName"
-                           required>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Middle Name
-                    </label>
-
-                    <input id="middleName">
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Last Name
-                    </label>
-
-                    <input id="lastName"
-                           required>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Date of Birth
-                    </label>
-
-                    <input id="dateOfBirth"
-                           type="date">
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Gender
-                    </label>
-
-                    <select id="gender">
-
-                        <option value="">
-                            Select Gender
-                        </option>
-
-                        <option value="MALE">
-                            Male
-                        </option>
-
-                        <option value="FEMALE">
-                            Female
-                        </option>
-
-                        <option value="OTHER">
-                            Other
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Customer Type
-                    </label>
-
-                    <select id="customerType">
-
-                        <option value="INDIVIDUAL">
-                            Individual
-                        </option>
-
-                        <option value="BUSINESS">
-                            Business
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Email
-                    </label>
-
-                    <input id="email"
-                           type="email"
-                           required>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Mobile Number
-                    </label>
-
-                    <input id="mobileNumber"
-                           required>
-
-                </div>
-
-            </div>
-
-
-            <button class="primary-button"
-                    type="submit">
-
-                Save Changes
-
-            </button>
-
-        </form>
-
+        <h1 class="heading text-white text-3xl font-bold mt-10 leading-tight">Manage your<br/>account, in one place.</h1>
+        <p class="text-emerald-100/70 mt-4 text-sm max-w-xs">Sign in to view your profile, contacts and addresses — synced securely with your Customer API.</p>
+      </div>
+      <div class="flex gap-6 text-emerald-100/60 text-xs">
+        <span>&#9679; Secure sessions</span>
+        <span>&#9679; KYC ready</span>
+      </div>
     </div>
 
-</div>
+    <!-- right form panel -->
+    <div class="glass !rounded-none p-8 sm:p-10 fade-slide">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="heading text-2xl font-bold">Welcome back</h2>
+        <button onclick="toggleDark()" class="w-10 h-10 rounded-full border flex items-center justify-center" style="border-color:var(--border)">
+          <span id="darkIconLogin">🌙</span>
+        </button>
+      </div>
 
+      <div id="demoBanner" class="hidden text-xs px-3 py-2 rounded-lg mb-5" style="background:rgba(245,158,11,.15); color:#B45309;"></div>
 
-<!-- =============================================================
-     CONTACT MODAL
-============================================================== -->
-
-<div class="modal"
-     id="contactModal">
-
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <h2>
-                Add Contact
-            </h2>
-
-            <button class="icon-btn"
-                    onclick="closeModal('contactModal')">
-
-                <i data-lucide="x"></i>
-
-            </button>
-
+      <form id="loginForm" onsubmit="return handleLogin(event)">
+        <div class="field">
+          <input id="loginIdentifier" type="text" placeholder=" " required />
+          <label>Email or mobile number</label>
         </div>
+        <div class="field">
+          <input id="loginPassword" type="password" placeholder=" " required />
+          <label>Password</label>
+        </div>
+        <button type="submit" id="loginBtn" class="btn-primary w-full flex items-center justify-center gap-2">
+          <span>Sign in</span>
+        </button>
+      </form>
 
+      <div class="flex items-center gap-3 my-6 text-xs" style="color:var(--muted)">
+        <div class="flex-1 h-px" style="background:var(--border)"></div> or continue with <div class="flex-1 h-px" style="background:var(--border)"></div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <button type="button" class="btn-ghost scale-tap text-sm">Google</button>
+        <button type="button" class="btn-ghost scale-tap text-sm">Mobile OTP</button>
+      </div>
 
-        <form id="contactForm">
+      <p class="text-center text-sm mt-8" style="color:var(--muted)">
+        New here? <button onclick="switchView('register')" class="font-semibold" style="color:var(--emerald)">Create an account</button>
+      </p>
+      <p class="text-center text-xs mt-3" style="color:var(--muted)">
+        <button onclick="switchView('config')" class="underline">API connection settings</button>
+      </p>
+    </div>
+  </div>
+</section>
 
-            <div class="form-group">
+<!-- ============ REGISTER VIEW ============ -->
+<section data-view="register" class="min-h-screen flex items-center justify-center px-4 py-10 relative overflow-hidden">
+  <div class="blob w-72 h-72 bg-emerald-400 -top-10 -right-10"></div>
+  <div class="relative z-10 w-full max-w-2xl glass p-8 sm:p-10 fade-slide">
+    <div class="flex justify-between items-center mb-2">
+      <h2 class="heading text-2xl font-bold">Create your account</h2>
+      <button onclick="switchView('login')" class="btn-ghost scale-tap text-sm">Back to sign in</button>
+    </div>
+    <p class="text-sm mb-8" style="color:var(--muted)">This creates a new customer record via the Customer API.</p>
 
-                <label>
-                    Contact Type
-                </label>
+    <form id="registerForm" onsubmit="return handleRegister(event)" class="grid sm:grid-cols-2 gap-x-4">
+      <div class="field">
+        <input id="regFirstName" placeholder=" " required /><label>First name</label>
+      </div>
+      <div class="field">
+        <input id="regLastName" placeholder=" " required /><label>Last name</label>
+      </div>
+      <div class="field">
+        <input id="regMiddleName" placeholder=" " /><label>Middle name (optional)</label>
+      </div>
+      <div class="field">
+        <input id="regDob" type="date" placeholder=" " /><label>Date of birth</label>
+      </div>
+      <div class="field">
+        <select id="regGender"><option></option><option>Male</option><option>Female</option><option>Other</option></select>
+        <label>Gender</label>
+      </div>
+      <div class="field">
+        <select id="regCustomerType" required><option value="INDIVIDUAL">Individual</option><option value="BUSINESS">Business</option></select>
+        <label>Customer type</label>
+      </div>
+      <div class="field">
+        <input id="regEmail" type="email" placeholder=" " required /><label>Email address</label>
+      </div>
+      <div class="field">
+        <input id="regMobile" type="tel" placeholder=" " required /><label>Mobile number</label>
+      </div>
+      <div class="field">
+        <input id="regPassword" type="password" placeholder=" " required minlength="6" /><label>Password</label>
+      </div>
+      <div class="field">
+        <input id="regPasswordConfirm" type="password" placeholder=" " required minlength="6" /><label>Confirm password</label>
+      </div>
+      <button type="submit" id="registerBtn" class="btn-gold w-full sm:col-span-2 flex items-center justify-center gap-2 mt-2">
+        <span>Create account</span>
+      </button>
+    </form>
+  </div>
+</section>
 
-                <select id="contactType"
-                        required>
+<!-- ============ API CONFIG VIEW ============ -->
+<section data-view="config" class="min-h-screen flex items-center justify-center px-4 py-10">
+  <div class="w-full max-w-md glass p-8 fade-slide">
+    <h2 class="heading text-xl font-bold mb-2">API connection</h2>
+    <p class="text-sm mb-6" style="color:var(--muted)">Point this dashboard at your Spring Boot backend.</p>
+    <div class="field">
+      <input id="apiBaseInput" placeholder=" " />
+      <label>API base URL</label>
+    </div>
+    <button onclick="saveApiBase()" class="btn-primary w-full">Save &amp; continue</button>
+    <button onclick="switchView('login')" class="btn-ghost w-full mt-3">Cancel</button>
+  </div>
+</section>
 
-                    <option value="EMAIL">
-                        Email
-                    </option>
+<!-- ============ DASHBOARD VIEW ============ -->
+<section data-view="dashboard" class="min-h-screen pb-24 md:pb-10">
 
-                    <option value="MOBILE">
-                        Mobile
-                    </option>
-
-                    <option value="ALTERNATE">
-                        Alternate
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <br>
-
-
-            <div class="form-group">
-
-                <label>
-                    Contact Value
-                </label>
-
-                <input id="contactValue"
-                       required>
-
-            </div>
-
-
-            <button class="primary-button"
-                    type="submit">
-
-                Add Contact
-
-            </button>
-
-        </form>
-
+  <!-- topbar -->
+  <header class="glass !rounded-none border-x-0 border-t-0 sticky top-0 z-40 px-4 sm:px-8 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="avatar-ring w-10 h-10">
+        <div id="avatarInitials" class="w-full h-full rounded-full flex items-center justify-center font-bold text-sm" style="background:var(--navy); color:#fff;">--</div>
+      </div>
+      <div>
+        <p class="text-xs" style="color:var(--muted)">Good to see you</p>
+        <p id="greetName" class="font-semibold heading text-sm">Loading…</p>
+      </div>
     </div>
 
-</div>
+    <nav class="hidden md:flex items-center gap-1 text-sm font-medium">
+      <button data-tab="overview" onclick="switchTab('overview')" class="tab-btn nav-pill active px-4 py-2 rounded-xl">Overview</button>
+      <button data-tab="profile" onclick="switchTab('profile')" class="tab-btn nav-pill px-4 py-2 rounded-xl">Profile</button>
+      <button data-tab="contacts" onclick="switchTab('contacts')" class="tab-btn nav-pill px-4 py-2 rounded-xl">Contacts</button>
+      <button data-tab="addresses" onclick="switchTab('addresses')" class="tab-btn nav-pill px-4 py-2 rounded-xl">Addresses</button>
+    </nav>
 
+    <div class="flex items-center gap-2">
+      <button onclick="toggleDark()" class="w-10 h-10 rounded-full border flex items-center justify-center scale-tap" style="border-color:var(--border)">
+        <span id="darkIconDash" class="sun-moon">🌙</span>
+      </button>
+      <button onclick="handleLogout()" class="btn-ghost scale-tap text-sm hidden sm:block">Log out</button>
+    </div>
+  </header>
 
-<!-- =============================================================
-     ADDRESS MODAL
-============================================================== -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-8 py-8">
 
-<div class="modal"
-     id="addressModal">
+    <!-- ---------- OVERVIEW TAB ---------- -->
+    <div data-tab-panel="overview" class="tab-panel">
+      <div id="demoBannerDash" class="hidden text-xs px-4 py-2.5 rounded-xl mb-6" style="background:rgba(245,158,11,.15); color:#B45309;"></div>
 
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <h2>
-                Add Address
-            </h2>
-
-            <button class="icon-btn"
-                    onclick="closeModal('addressModal')">
-
-                <i data-lucide="x"></i>
-
-            </button>
-
+      <div class="grid sm:grid-cols-3 gap-4 stagger">
+        <div class="glass p-6" style="animation-delay:0ms">
+          <p class="text-xs" style="color:var(--muted)">Customer number</p>
+          <p id="statCustomerNumber" class="heading text-xl font-bold mt-1">—</p>
         </div>
+        <div class="glass p-6" style="animation-delay:60ms">
+          <p class="text-xs" style="color:var(--muted)">Status</p>
+          <p class="mt-2 flex items-center gap-2"><span id="statusDot" class="status-dot"></span><span id="statCustomerStatus" class="font-semibold">—</span></p>
+        </div>
+        <div class="glass p-6" style="animation-delay:120ms">
+          <p class="text-xs" style="color:var(--muted)">Customer type</p>
+          <p id="statCustomerType" class="heading text-xl font-bold mt-1">—</p>
+        </div>
+      </div>
 
+      <div class="glass p-6 mt-6 stagger">
+        <h3 class="heading font-semibold mb-4" style="animation-delay:0ms">Quick actions</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <button onclick="switchTab('profile')" class="scale-tap glass p-4 text-left" style="animation-delay:40ms">
+            <div class="text-xl mb-2">👤</div><p class="text-sm font-semibold">Edit profile</p>
+          </button>
+          <button onclick="switchTab('contacts')" class="scale-tap glass p-4 text-left" style="animation-delay:80ms">
+            <div class="text-xl mb-2">☎️</div><p class="text-sm font-semibold">Manage contacts</p>
+          </button>
+          <button onclick="switchTab('addresses')" class="scale-tap glass p-4 text-left" style="animation-delay:120ms">
+            <div class="text-xl mb-2">📍</div><p class="text-sm font-semibold">Manage addresses</p>
+          </button>
+          <button onclick="refreshAll()" class="scale-tap glass p-4 text-left" style="animation-delay:160ms">
+            <div class="text-xl mb-2">🔄</div><p class="text-sm font-semibold">Refresh data</p>
+          </button>
+        </div>
+      </div>
 
-        <form id="addressForm">
-
-            <div class="form-grid">
-
-                <div class="form-group">
-
-                    <label>
-                        Address Type
-                    </label>
-
-                    <select id="addressType">
-
-                        <option value="HOME">
-                            Home
-                        </option>
-
-                        <option value="OFFICE">
-                            Office
-                        </option>
-
-                        <option value="PERMANENT">
-                            Permanent
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Postal Code
-                    </label>
-
-                    <input id="postalCode">
-
-                </div>
-
-
-                <div class="form-group full">
-
-                    <label>
-                        Address Line 1
-                    </label>
-
-                    <input id="addressLine1"
-                           required>
-
-                </div>
-
-
-                <div class="form-group full">
-
-                    <label>
-                        Address Line 2
-                    </label>
-
-                    <input id="addressLine2">
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        City
-                    </label>
-
-                    <input id="city"
-                           required>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        State
-                    </label>
-
-                    <input id="state">
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Country
-                    </label>
-
-                    <input id="country"
-                           value="India"
-                           required>
-
-                </div>
-
-            </div>
-
-
-            <button class="primary-button"
-                    type="submit">
-
-                Add Address
-
-            </button>
-
-        </form>
-
+      <div class="grid md:grid-cols-2 gap-4 mt-6">
+        <div class="glass p-6">
+          <h3 class="heading font-semibold mb-3">Primary contact</h3>
+          <div id="overviewPrimaryContact" class="text-sm" style="color:var(--muted)">No verified contact yet.</div>
+        </div>
+        <div class="glass p-6">
+          <h3 class="heading font-semibold mb-3">Primary address</h3>
+          <div id="overviewPrimaryAddress" class="text-sm" style="color:var(--muted)">No primary address set.</div>
+        </div>
+      </div>
     </div>
 
-</div>
+    <!-- ---------- PROFILE TAB ---------- -->
+    <div data-tab-panel="profile" class="tab-panel hidden">
+      <div class="glass p-6 sm:p-8 max-w-2xl">
+        <h3 class="heading font-semibold text-lg mb-6">Personal details</h3>
+        <form id="profileForm" onsubmit="return handleProfileUpdate(event)" class="grid sm:grid-cols-2 gap-x-4">
+          <div class="field"><input id="pFirstName" placeholder=" " required/><label>First name</label></div>
+          <div class="field"><input id="pLastName" placeholder=" " required/><label>Last name</label></div>
+          <div class="field"><input id="pMiddleName" placeholder=" "/><label>Middle name</label></div>
+          <div class="field"><input id="pDob" type="date" placeholder=" "/><label>Date of birth</label></div>
+          <div class="field">
+            <select id="pGender"><option></option><option>Male</option><option>Female</option><option>Other</option></select>
+            <label>Gender</label>
+          </div>
+          <div class="field">
+            <select id="pCustomerType"><option value="INDIVIDUAL">Individual</option><option value="BUSINESS">Business</option></select>
+            <label>Customer type</label>
+          </div>
+          <div class="field"><input id="pEmail" type="email" placeholder=" " required/><label>Email</label></div>
+          <div class="field"><input id="pMobile" placeholder=" " required/><label>Mobile number</label></div>
+          <button type="submit" id="profileSaveBtn" class="btn-primary sm:col-span-2 mt-2 flex items-center justify-center gap-2">Save changes</button>
+        </form>
+      </div>
+    </div>
 
+    <!-- ---------- CONTACTS TAB ---------- -->
+    <div data-tab-panel="contacts" class="tab-panel hidden">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="heading font-semibold text-lg">Contacts</h3>
+        <button onclick="openContactForm()" class="btn-primary text-sm scale-tap">+ Add contact</button>
+      </div>
 
-<!-- TOAST -->
+      <form id="contactForm" onsubmit="return handleAddContact(event)" class="glass p-5 mb-5 hidden grid sm:grid-cols-3 gap-3 items-end fade-slide">
+        <div class="field !mb-0">
+          <select id="cType" required><option value="">Select</option><option>EMAIL</option><option>MOBILE</option><option>WORK_PHONE</option><option>EMERGENCY</option></select>
+          <label>Contact type</label>
+        </div>
+        <div class="field !mb-0"><input id="cValue" placeholder=" " required/><label>Value</label></div>
+        <button type="submit" class="btn-primary h-[52px]">Save contact</button>
+      </form>
 
-<div class="toast"
-     id="toast">
-</div>
+      <div id="contactsList" class="grid sm:grid-cols-2 gap-3 stagger"></div>
+      <div id="contactsEmpty" class="hidden text-sm text-center py-10" style="color:var(--muted)">No contacts yet — add your first one above.</div>
+    </div>
 
+    <!-- ---------- ADDRESSES TAB ---------- -->
+    <div data-tab-panel="addresses" class="tab-panel hidden">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="heading font-semibold text-lg">Addresses</h3>
+        <button onclick="openAddressForm()" class="btn-primary text-sm scale-tap">+ Add address</button>
+      </div>
+
+      <form id="addressForm" onsubmit="return handleAddAddress(event)" class="glass p-5 mb-5 hidden grid sm:grid-cols-2 gap-3 fade-slide">
+        <div class="field !mb-0">
+          <select id="aType" required><option value="">Select</option><option>HOME</option><option>WORK</option><option>BILLING</option><option>SHIPPING</option></select>
+          <label>Address type</label>
+        </div>
+        <div class="field !mb-0"><input id="aLine1" placeholder=" " required/><label>Address line 1</label></div>
+        <div class="field !mb-0"><input id="aLine2" placeholder=" "/><label>Address line 2</label></div>
+        <div class="field !mb-0"><input id="aCity" placeholder=" " required/><label>City</label></div>
+        <div class="field !mb-0"><input id="aState" placeholder=" "/><label>State</label></div>
+        <div class="field !mb-0"><input id="aCountry" placeholder=" " required/><label>Country</label></div>
+        <div class="field !mb-0"><input id="aPostal" placeholder=" "/><label>Postal code</label></div>
+        <label class="flex items-center gap-2 text-sm"><input id="aPrimary" type="checkbox"/> Set as primary</label>
+        <button type="submit" class="btn-primary sm:col-span-2">Save address</button>
+      </form>
+
+      <div id="addressesList" class="grid sm:grid-cols-2 gap-3 stagger"></div>
+      <div id="addressesEmpty" class="hidden text-sm text-center py-10" style="color:var(--muted)">No addresses yet — add your first one above.</div>
+    </div>
+
+  </main>
+
+  <!-- bottom nav (mobile) -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 glass !rounded-none border-x-0 border-b-0 flex justify-around py-2 z-40">
+    <button data-tab="overview" onclick="switchTab('overview')" class="tab-btn nav-pill active flex flex-col items-center gap-1 px-4 py-1.5 rounded-xl text-xs">🏠<span>Overview</span></button>
+    <button data-tab="profile" onclick="switchTab('profile')" class="tab-btn nav-pill flex flex-col items-center gap-1 px-4 py-1.5 rounded-xl text-xs">👤<span>Profile</span></button>
+    <button data-tab="contacts" onclick="switchTab('contacts')" class="tab-btn nav-pill flex flex-col items-center gap-1 px-4 py-1.5 rounded-xl text-xs">☎️<span>Contacts</span></button>
+    <button data-tab="addresses" onclick="switchTab('addresses')" class="tab-btn nav-pill flex flex-col items-center gap-1 px-4 py-1.5 rounded-xl text-xs">📍<span>Address</span></button>
+    <button onclick="handleLogout()" class="tab-btn nav-pill flex flex-col items-center gap-1 px-4 py-1.5 rounded-xl text-xs">🚪<span>Log out</span></button>
+  </nav>
+</section>
 
 <script>
-
-/* ===============================================================
-   CONFIGURATION
-================================================================ */
-
-const API_BASE_URL = "http://localhost:8080/api/v1";
-
-
-/* ===============================================================
-   CUSTOMER SESSION
-================================================================ */
-
-/*
- * Expected after login:
- *
- * sessionStorage.setItem(
- *     "customerSession",
- *     JSON.stringify({
- *         customerId: response.customerId,
- *         customerNumber: response.customerNumber,
- *         firstName: response.firstName,
- *         customerType: response.customerType,
- *         status: response.status
- *     })
- * );
- */
-
-let customerSession = null;
-let customer = null;
-let contacts = [];
-let addresses = [];
-
-
-function getCustomerSession() {
-
-    const raw =
-        sessionStorage.getItem("customerSession");
-
-    if (!raw) {
-
-        showToast("Customer session not found");
-
-        return null;
-    }
-
-    try {
-
-        return JSON.parse(raw);
-
-    } catch (error) {
-
-        console.error(error);
-
-        sessionStorage.removeItem(
-            "customerSession"
-        );
-
-        return null;
-    }
-}
-
-
-/* ===============================================================
-   API HELPER
-================================================================ */
-
-async function apiRequest(
-    url,
-    options = {}
-) {
-
-    const response =
-        await fetch(
-            API_BASE_URL + url,
-            {
-                ...options,
-
-                headers: {
-                    "Content-Type":
-                        "application/json",
-
-                    ...(options.headers || {})
-                }
-            }
-        );
-
-    if (!response.ok) {
-
-        const errorText =
-            await response.text();
-
-        throw new Error(
-            errorText ||
-            `HTTP ${response.status}`
-        );
-    }
-
-    if (response.status === 204) {
-        return null;
-    }
-
-    return response.json();
-}
-
-
-/* ===============================================================
-   LOAD CUSTOMER
-================================================================ */
-
-async function loadCustomer() {
-
-    customerSession =
-        getCustomerSession();
-
-    if (!customerSession) {
-
-        /*
-         * For development only.
-         *
-         * Remove this mock session once
-         * your login API is connected.
-         */
-
-        customerSession = {
-            customerId: 1,
-            customerNumber: "CUS-2026-00001",
-            firstName: "Devesh",
-            customerType: "INDIVIDUAL",
-            status: "ACTIVE"
-        };
-
-        sessionStorage.setItem(
-            "customerSession",
-            JSON.stringify(customerSession)
-        );
-    }
-
-
-    try {
-
-        customer =
-            await apiRequest(
-                `/customers/${customerSession.customerId}`
-            );
-
-        renderCustomer();
-
-        await Promise.all([
-            loadContacts(),
-            loadAddresses()
-        ]);
-
-    } catch (error) {
-
-        console.error(
-            "Customer loading failed:",
-            error
-        );
-
-        /*
-         * Development fallback.
-         */
-
-        customer = {
-            customerId:
-                customerSession.customerId,
-
-            customerNumber:
-                customerSession.customerNumber,
-
-            firstName:
-                customerSession.firstName,
-
-            middleName:
-                "",
-
-            lastName:
-                "",
-
-            email:
-                "customer@example.com",
-
-            mobileNumber:
-                "XXXXXXXXXX",
-
-            customerType:
-                customerSession.customerType,
-
-            status:
-                customerSession.status,
-
-            gender:
-                "",
-
-            dateOfBirth:
-                "",
-
-            createdAt:
-                new Date().toISOString()
-        };
-
-        renderCustomer();
-
-    }
-
-}
-
-
-/* ===============================================================
-   RENDER CUSTOMER
-================================================================ */
-
-function renderCustomer() {
-
-    if (!customer) {
-        return;
-    }
-
-    const firstName =
-        customer.firstName || "Customer";
-
-    const fullName =
-        [
-            customer.firstName,
-            customer.middleName,
-            customer.lastName
-        ]
-        .filter(Boolean)
-        .join(" ");
-
-
-    document.getElementById(
-        "welcomeName"
-    ).textContent =
-        firstName;
-
-
-    document.getElementById(
-        "profileName"
-    ).textContent =
-        fullName || firstName;
-
-
-    document.getElementById(
-        "profileEmail"
-    ).textContent =
-        customer.email || "-";
-
-
-    document.getElementById(
-        "sidebarCustomerName"
-    ).textContent =
-        fullName || firstName;
-
-
-    document.getElementById(
-        "sidebarCustomerNumber"
-    ).textContent =
-        customer.customerNumber || "-";
-
-
-    const initials =
-        (
-            (customer.firstName || "C")[0] +
-            (customer.lastName || "")[0]
-        ).toUpperCase();
-
-
-    document.getElementById(
-        "topAvatar"
-    ).textContent =
-        initials;
-
-
-    document.getElementById(
-        "profileAvatar"
-    ).textContent =
-        initials;
-
-
-    document.getElementById(
-        "detailCustomerNumber"
-    ).textContent =
-        customer.customerNumber || "-";
-
-
-    document.getElementById(
-        "detailName"
-    ).textContent =
-        fullName || "-";
-
-
-    document.getElementById(
-        "detailDob"
-    ).textContent =
-        customer.dateOfBirth || "-";
-
-
-    document.getElementById(
-        "detailGender"
-    ).textContent =
-        customer.gender || "-";
-
-
-    document.getElementById(
-        "detailEmail"
-    ).textContent =
-        customer.email || "-";
-
-
-    document.getElementById(
-        "detailMobile"
-    ).textContent =
-        customer.mobileNumber || "-";
-
-
-    document.getElementById(
-        "detailType"
-    ).textContent =
-        customer.customerType || "-";
-
-
-    document.getElementById(
-        "detailStatus"
-    ).textContent =
-        customer.status || "-";
-
-
-    document.getElementById(
-        "detailCreated"
-    ).textContent =
-        customer.createdAt
-            ? new Date(
-                customer.createdAt
-            ).toLocaleDateString()
-            : "-";
-
-
-    document.getElementById(
-        "firstName"
-    ).value =
-        customer.firstName || "";
-
-
-    document.getElementById(
-        "middleName"
-    ).value =
-        customer.middleName || "";
-
-
-    document.getElementById(
-        "lastName"
-    ).value =
-        customer.lastName || "";
-
-
-    document.getElementById(
-        "dateOfBirth"
-    ).value =
-        customer.dateOfBirth || "";
-
-
-    document.getElementById(
-        "gender"
-    ).value =
-        customer.gender || "";
-
-
-    document.getElementById(
-        "customerType"
-    ).value =
-        customer.customerType || "INDIVIDUAL";
-
-
-    document.getElementById(
-        "email"
-    ).value =
-        customer.email || "";
-
-
-    document.getElementById(
-        "mobileNumber"
-    ).value =
-        customer.mobileNumber || "";
-
-}
-
-
-/* ===============================================================
-   CONTACTS
-================================================================ */
-
-async function loadContacts() {
-
-    try {
-
-        contacts =
-            await apiRequest(
-                `/customers/${customerSession.customerId}/contacts`
-            );
-
-        renderContacts();
-
-    } catch (error) {
-
-        console.error(error);
-
-        document.getElementById(
-            "contactsContainer"
-        ).innerHTML =
-            `
-            <div style="color:var(--muted);font-size:13px">
-                Unable to load contacts.
-            </div>
-            `;
-
-    }
-
-}
-
-
-function renderContacts() {
-
-    const container =
-        document.getElementById(
-            "contactsContainer"
-        );
-
-
-    if (!contacts || contacts.length === 0) {
-
-        container.innerHTML =
-            `
-            <div style="
-                padding:25px;
-                text-align:center;
-                color:var(--muted);
-                font-size:13px;
-            ">
-                No additional contacts found.
-            </div>
-            `;
-
-        return;
-    }
-
-
-    container.innerHTML =
-        contacts.map(
-            contact => `
-
-            <div class="transaction">
-
-                <div class="transaction-icon emerald-icon">
-
-                    <i data-lucide="${
-                        contact.contactType === "EMAIL"
-                            ? "mail"
-                            : "phone"
-                    }"></i>
-
-                </div>
-
-                <div class="transaction-info">
-
-                    <div class="transaction-name">
-                        ${escapeHtml(
-                            contact.contactType || "Contact"
-                        )}
-                    </div>
-
-                    <div class="transaction-date">
-
-                        ${escapeHtml(
-                            contact.contactValue || "-"
-                        )}
-
-                    </div>
-
-                </div>
-
-                <div>
-
-                    ${
-                        contact.verified
-                        || contact.isVerified
-
-                        ? `
-                            <span class="badge badge-success">
-                                Verified
-                            </span>
-                          `
-                        : `
-                            <span class="badge"
-                                  style="
-                                  background:#fef3c7;
-                                  color:#92400e;
-                                  ">
-                                Unverified
-                            </span>
-                          `
-                    }
-
-                </div>
-
-            </div>
-
-            `
-        )
-        .join("");
-
-    lucide.createIcons();
-
-}
-
-
-/* ===============================================================
-   ADD CONTACT
-================================================================ */
-
-async function addContact() {
-
-    const dto = {
-
-        contactType:
-            document.getElementById(
-                "contactType"
-            ).value,
-
-        contactValue:
-            document.getElementById(
-                "contactValue"
-            ).value,
-
-        isVerified: false
-    };
-
-
-    try {
-
-        await apiRequest(
-            `/customers/${customerSession.customerId}/contacts`,
-            {
-                method: "POST",
-                body: JSON.stringify(dto)
-            }
-        );
-
-
-        closeModal("contactModal");
-
-        document.getElementById(
-            "contactForm"
-        ).reset();
-
-        await loadContacts();
-
-        showToast(
-            "Contact added successfully"
-        );
-
-    } catch (error) {
-
-        console.error(error);
-
-        showToast(
-            "Unable to add contact"
-        );
-
-    }
-
-}
-
-
-/* ===============================================================
-   ADDRESSES
-================================================================ */
-
-async function loadAddresses() {
-
-    try {
-
-        addresses =
-            await apiRequest(
-                `/customers/${customerSession.customerId}/addresses`
-            );
-
-        renderAddresses();
-
-    } catch (error) {
-
-        console.error(error);
-
-        document.getElementById(
-            "addressesContainer"
-        ).innerHTML =
-            `
-            <div style="
-                color:var(--muted);
-                font-size:13px;
-            ">
-                Unable to load addresses.
-            </div>
-            `;
-
-    }
-
-}
-
-
-function renderAddresses() {
-
-    const container =
-        document.getElementById(
-            "addressesContainer"
-        );
-
-
-    if (!addresses || addresses.length === 0) {
-
-        container.innerHTML =
-            `
-            <div style="
-                padding:25px;
-                text-align:center;
-                color:var(--muted);
-                font-size:13px;
-            ">
-                No addresses found.
-            </div>
-            `;
-
-        return;
-    }
-
-
-    container.innerHTML =
-        addresses.map(
-            address => `
-
-            <div class="address-card"
-                 style="
-                    border-bottom:1px solid var(--border);
-                 ">
-
-                <div class="address-header">
-
-                    <strong>
-
-                        ${
-                            escapeHtml(
-                                address.addressType ||
-                                "Address"
-                            )
-                        }
-
-                    </strong>
-
-                    ${
-                        address.primary
-                        || address.isPrimary
-
-                        ? `
-                            <span class="badge badge-primary">
-                                Primary
-                            </span>
-                          `
-                        : ""
-                    }
-
-                </div>
-
-                <div style="
-                    font-size:13px;
-                    line-height:1.7;
-                    color:var(--muted);
-                ">
-
-                    ${escapeHtml(
-                        address.addressLine1 || ""
-                    )}
-
-                    <br>
-
-                    ${
-                        address.addressLine2
-                            ? escapeHtml(
-                                address.addressLine2
-                              ) + "<br>"
-                            : ""
-                    }
-
-                    ${escapeHtml(
-                        address.city || ""
-                    )},
-
-                    ${escapeHtml(
-                        address.state || ""
-                    )}
-
-                    <br>
-
-                    ${escapeHtml(
-                        address.country || ""
-                    )}
-
-                    ${
-                        address.postalCode
-                            ? " - " +
-                              escapeHtml(
-                                address.postalCode
-                              )
-                            : ""
-                    }
-
-                </div>
-
-            </div>
-
-            `
-        )
-        .join("");
-
-}
-
-
-/* ===============================================================
-   ADD ADDRESS
-================================================================ */
-
-async function addAddress() {
-
-    const dto = {
-
-        addressType:
-            document.getElementById(
-                "addressType"
-            ).value,
-
-        addressLine1:
-            document.getElementById(
-                "addressLine1"
-            ).value,
-
-        addressLine2:
-            document.getElementById(
-                "addressLine2"
-            ).value,
-
-        city:
-            document.getElementById(
-                "city"
-            ).value,
-
-        state:
-            document.getElementById(
-                "state"
-            ).value,
-
-        country:
-            document.getElementById(
-                "country"
-            ).value,
-
-        postalCode:
-            document.getElementById(
-                "postalCode"
-            ).value,
-
-        isPrimary: false
-    };
-
-
-    try {
-
-        await apiRequest(
-            `/customers/${customerSession.customerId}/addresses`,
-            {
-                method: "POST",
-                body: JSON.stringify(dto)
-            }
-        );
-
-
-        closeModal("addressModal");
-
-        document.getElementById(
-            "addressForm"
-        ).reset();
-
-        await loadAddresses();
-
-        showToast(
-            "Address added successfully"
-        );
-
-    } catch (error) {
-
-        console.error(error);
-
-        showToast(
-            "Unable to add address"
-        );
-
-    }
-
-}
-
-
-/* ===============================================================
-   UPDATE CUSTOMER
-================================================================ */
-
-async function updateCustomer(event) {
-
-    event.preventDefault();
-
-
-    const dto = {
-
-        firstName:
-            document.getElementById(
-                "firstName"
-            ).value,
-
-        middleName:
-            document.getElementById(
-                "middleName"
-            ).value,
-
-        lastName:
-            document.getElementById(
-                "lastName"
-            ).value,
-
-        dateOfBirth:
-            document.getElementById(
-                "dateOfBirth"
-            ).value,
-
-        gender:
-            document.getElementById(
-                "gender"
-            ).value,
-
-        email:
-            document.getElementById(
-                "email"
-            ).value,
-
-        mobileNumber:
-            document.getElementById(
-                "mobileNumber"
-            ).value,
-
-        customerType:
-            document.getElementById(
-                "customerType"
-            ).value
-    };
-
-
-    try {
-
-        customer =
-            await apiRequest(
-                `/customers/${customerSession.customerId}`,
-                {
-                    method: "PUT",
-                    body: JSON.stringify(dto)
-                }
-            );
-
-
-        customerSession.firstName =
-            customer.firstName;
-
-        customerSession.customerNumber =
-            customer.customerNumber;
-
-        customerSession.customerType =
-            customer.customerType;
-
-        customerSession.status =
-            customer.status;
-
-
-        sessionStorage.setItem(
-            "customerSession",
-            JSON.stringify(
-                customerSession
-            )
-        );
-
-
-        renderCustomer();
-
-        closeModal(
-            "customerModal"
-        );
-
-        showToast(
-            "Profile updated successfully"
-        );
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        showToast(
-            "Unable to update profile"
-        );
-
-    }
-
-}
-
-
-/* ===============================================================
-   LOAN CALCULATOR
-================================================================ */
-
-const INTEREST_RATE = 10.50;
-
-
-function calculateEMI(
-    principal,
-    annualRate,
-    months
-) {
-
-    const monthlyRate =
-        annualRate / 12 / 100;
-
-
-    if (monthlyRate === 0) {
-
-        return principal / months;
-
-    }
-
-
-    return (
-        principal *
-        monthlyRate *
-        Math.pow(
-            1 + monthlyRate,
-            months
-        )
-    )
-    /
-    (
-        Math.pow(
-            1 + monthlyRate,
-            months
-        ) - 1
-    );
-
-}
-
-
-function updateCalculator() {
-
-    const amount =
-        Number(
-            document.getElementById(
-                "amountSlider"
-            ).value
-        );
-
-
-    const months =
-        Number(
-            document.getElementById(
-                "durationSlider"
-            ).value
-        );
-
-
-    const emi =
-        calculateEMI(
-            amount,
-            INTEREST_RATE,
-            months
-        );
-
-
-    const totalPayment =
-        emi * months;
-
-
-    const totalInterest =
-        totalPayment - amount;
-
-
-    document.getElementById(
-        "amountValue"
-    ).textContent =
-        formatCurrency(amount);
-
-
-    document.getElementById(
-        "durationValue"
-    ).textContent =
-        `${months} Months`;
-
-
-    animateNumber(
-        "emiValue",
-        emi
-    );
-
-
-    document.getElementById(
-        "principalText"
-    ).textContent =
-        formatCurrency(amount);
-
-
-    document.getElementById(
-        "interestText"
-    ).textContent =
-        formatCurrency(totalInterest);
-
-
-    updateDonut(
-        amount,
-        totalInterest
-    );
-
-}
-
-
-function formatCurrency(
-    value
-) {
-
-    return new Intl.NumberFormat(
-        "en-IN",
-        {
-            style: "currency",
-            currency: "INR",
-            maximumFractionDigits: 0
-        }
-    ).format(value);
-
-}
-
-
-function animateNumber(
-    elementId,
-    target
-) {
-
-    const element =
-        document.getElementById(
-            elementId
-        );
-
-
-    const start =
-        Number(
-            element.dataset.value || 0
-        );
-
-
-    const duration = 350;
-
-    const startTime =
-        performance.now();
-
-
-    function frame(now) {
-
-        const progress =
-            Math.min(
-                (now - startTime) /
-                duration,
-                1
-            );
-
-
-        const value =
-            start +
-            (target - start) *
-            progress;
-
-
-        element.textContent =
-            formatCurrency(value);
-
-
-        if (progress < 1) {
-
-            requestAnimationFrame(frame);
-
-        } else {
-
-            element.dataset.value =
-                target;
-
-        }
-
-    }
-
-
-    requestAnimationFrame(frame);
-
-}
-
-
-/* ===============================================================
-   DONUT CHART
-================================================================ */
-
-let loanDonutChart = null;
-
-
-function initializeLoanDonut() {
-
-    const canvas =
-        document.getElementById(
-            "loanDonut"
-        );
-
-
-    loanDonutChart =
-        new Chart(
-            canvas,
-            {
-                type: "doughnut",
-
-                data: {
-                    labels: [
-                        "Principal",
-                        "Interest"
-                    ],
-
-                    datasets: [
-                        {
-                            data: [
-                                500000,
-                                100000
-                            ],
-
-                            backgroundColor: [
-                                "#059669",
-                                "#f59e0b"
-                            ],
-
-                            borderWidth: 0
-                        }
-                    ]
-                },
-
-                options: {
-
-                    cutout: "72%",
-
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            }
-        );
-
-}
-
-
-function updateDonut(
-    principal,
-    interest
-) {
-
-    if (!loanDonutChart) {
-        return;
-    }
-
-
-    loanDonutChart.data.datasets[0].data =
-        [
-            principal,
-            interest
-        ];
-
-
-    loanDonutChart.update();
-
-}
-
-
-/* ===============================================================
-   SPENDING CHART
-================================================================ */
-
-function initializeSpendingChart() {
-
-    const canvas =
-        document.getElementById(
-            "spendingChart"
-        );
-
-
-    new Chart(
-        canvas,
-        {
-            type: "bar",
-
-            data: {
-
-                labels: [
-                    "Apr",
-                    "May",
-                    "Jun",
-                    "Jul",
-                    "Aug",
-                    "Sep"
-                ],
-
-                datasets: [
-                    {
-                        data: [
-                            18000,
-                            22000,
-                            16000,
-                            25000,
-                            19000,
-                            14000
-                        ],
-
-                        backgroundColor:
-                            "#059669",
-
-                        borderRadius: 8,
-
-                        maxBarThickness: 30
-                    }
-                ]
-            },
-
-            options: {
-
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-
-                scales: {
-
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            display: false
-                        }
-                    },
-
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
-
-                }
-
-            }
-        }
-    );
-
-}
-
-
-/* ===============================================================
-   CREDIT SCORE ANIMATION
-================================================================ */
-
-function animateCreditScore() {
-
-    const target = 720;
-
-    const duration = 1200;
-
-    const startTime =
-        performance.now();
-
-
-    const arc =
-        document.getElementById(
-            "scoreArc"
-        );
-
-
-    function frame(now) {
-
-        const progress =
-            Math.min(
-                (now - startTime) /
-                duration,
-                1
-            );
-
-
-        const value =
-            Math.round(
-                target * progress
-            );
-
-
-        document.getElementById(
-            "scoreNumber"
-        ).textContent =
-            value;
-
-
-        const circumference = 283;
-
-        arc.style.strokeDashoffset =
-            circumference -
-            (
-                circumference *
-                progress
-            );
-
-
-        if (progress < 1) {
-
-            requestAnimationFrame(frame);
-
-        }
-
-    }
-
-
-    requestAnimationFrame(frame);
-
-}
-
-
-/* ===============================================================
-   SCREEN NAVIGATION
-================================================================ */
-
-function openScreen(
-    screenId
-) {
-
-    document
-        .querySelectorAll(".screen")
-        .forEach(
-            screen => {
-
-                screen.classList.remove(
-                    "active"
-                );
-
-            }
-        );
-
-
-    const target =
-        document.getElementById(
-            screenId
-        );
-
-
-    if (!target) {
-        return;
-    }
-
-
-    target.classList.add(
-        "active"
-    );
-
-
-    document
-        .querySelectorAll(
-            ".nav-item,.mobile-nav button"
-        )
-        .forEach(
-            button => {
-
-                button.classList.toggle(
-                    "active",
-                    button.dataset.screen ===
-                    screenId
-                );
-
-            }
-        );
-
-
-    const titles = {
-
-        dashboard:
-            "Dashboard",
-
-        calculator:
-            "Loan Calculator",
-
-        loans:
-            "My Loans",
-
-        transactions:
-            "Transactions",
-
-        credit:
-            "Credit Score",
-
-        profile:
-            "My Profile",
-
-        support:
-            "Support"
-
-    };
-
-
-    document.getElementById(
-        "pageTitle"
-    ).textContent =
-        titles[screenId] ||
-        "Dashboard";
-
-
-    document.getElementById(
-        "sidebar"
-    ).classList.remove(
-        "open"
-    );
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
+/* =========================================================================
+   CONFIG
+   The endpoints below match the controllers supplied by the user exactly:
+     GET    /api/v1/customers/{customerId}
+     PUT    /api/v1/customers/{customerId}
+     GET    /api/v1/customers/{customerId}/contacts   (+ POST/PUT/PATCH verify/DELETE)
+     GET    /api/v1/customers/{customerId}/addresses  (+ POST/PUT/PATCH set-primary/DELETE)
+   ASSUMPTIONS (no create/auth controller was supplied, so these are the
+   conventional REST endpoints — adjust API.register / API.login below to
+   match your real backend if different):
+     POST   /api/v1/customers            -> create/register a customer
+     POST   /api/v1/auth/login           -> { identifier, password } -> customer
+   If the backend is unreachable, the dashboard falls back to local demo
+   data so the UI can still be reviewed end-to-end.
+   ========================================================================= */
+const CONFIG = {
+  API_BASE_URL: localStorage.getItem('cd_api_base') || 'http://localhost:8080'
+};
+
+const API = {
+  base(){ return CONFIG.API_BASE_URL.replace(/\/+$/,''); },
+  async request(path, options={}){
+    const res = await fetch(this.base() + path, {
+      headers:{ 'Content-Type':'application/json', ...(options.headers||{}) },
+      ...options
     });
-
-}
-
-
-/* ===============================================================
-   MODALS
-================================================================ */
-
-function openCustomerEdit() {
-
-    document.getElementById(
-        "customerModal"
-    ).classList.add(
-        "show"
-    );
-
-}
-
-
-function openContactModal() {
-
-    document.getElementById(
-        "contactModal"
-    ).classList.add(
-        "show"
-    );
-
-}
-
-
-function openAddressModal() {
-
-    document.getElementById(
-        "addressModal"
-    ).classList.add(
-        "show"
-    );
-
-}
-
-
-function closeModal(
-    id
-) {
-
-    document.getElementById(
-        id
-    ).classList.remove(
-        "show"
-    );
-
-}
-
-
-/* ===============================================================
-   TOAST
-================================================================ */
-
-function showToast(
-    message
-) {
-
-    const toast =
-        document.getElementById(
-            "toast"
-        );
-
-
-    toast.textContent =
-        message;
-
-
-    toast.classList.add(
-        "show"
-    );
-
-
-    setTimeout(
-        () => {
-
-            toast.classList.remove(
-                "show"
-            );
-
-        },
-        3000
-    );
-
-}
-
-
-/* ===============================================================
-   DARK MODE
-================================================================ */
-
-document
-    .getElementById(
-        "darkToggle"
-    )
-    .addEventListener(
-        "click",
-        () => {
-
-            document.body.classList.toggle(
-                "dark"
-            );
-
-            const isDark =
-                document.body.classList.contains(
-                    "dark"
-                );
-
-
-            localStorage.setItem(
-                "finovaDarkMode",
-                isDark
-            );
-
-        }
-    );
-
-
-if (
-    localStorage.getItem(
-        "finovaDarkMode"
-    ) === "true"
-) {
-
-    document.body.classList.add(
-        "dark"
-    );
-
-}
-
-
-/* ===============================================================
-   MOBILE MENU
-================================================================ */
-
-document
-    .getElementById(
-        "mobileMenu"
-    )
-    .addEventListener(
-        "click",
-        () => {
-
-            document.getElementById(
-                "sidebar"
-            ).classList.toggle(
-                "open"
-            );
-
-        }
-    );
-
-
-/* ===============================================================
-   EVENT LISTENERS
-================================================================ */
-
-document
-    .querySelectorAll(
-        "[data-screen]"
-    )
-    .forEach(
-        button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    openScreen(
-                        button.dataset.screen
-                    );
-
-                }
-            );
-
-        }
-    );
-
-
-document
-    .getElementById(
-        "amountSlider"
-    )
-    .addEventListener(
-        "input",
-        updateCalculator
-    );
-
-
-document
-    .getElementById(
-        "durationSlider"
-    )
-    .addEventListener(
-        "input",
-        updateCalculator
-    );
-
-
-document
-    .getElementById(
-        "customerForm"
-    )
-    .addEventListener(
-        "submit",
-        updateCustomer
-    );
-
-
-document
-    .getElementById(
-        "contactForm"
-    )
-    .addEventListener(
-        "submit",
-        event => {
-
-            event.preventDefault();
-
-            addContact();
-
-        }
-    );
-
-
-document
-    .getElementById(
-        "addressForm"
-    )
-    .addEventListener(
-        "submit",
-        event => {
-
-            event.preventDefault();
-
-            addAddress();
-
-        }
-    );
-
-
-/* ===============================================================
-   SECURITY / HTML ESCAPING
-================================================================ */
-
-function escapeHtml(
-    value
-) {
-
-    if (value === null ||
-        value === undefined) {
-
-        return "";
-
+    if(!res.ok){
+      let msg = 'Request failed ('+res.status+')';
+      try{ const j = await res.json(); msg = j.message || j.error || msg; }catch(e){}
+      throw new Error(msg);
     }
+    if(res.status === 204) return null;
+    return res.json();
+  },
+  login(identifier,password){
+    return this.request('/api/v1/auth/login', { method:'POST', body: JSON.stringify({ identifier, password }) });
+  },
+  register(payload){
+    return this.request('/api/v1/customers', { method:'POST', body: JSON.stringify(payload) });
+  },
+  getCustomer(id){ return this.request(`/api/v1/customers/${id}`); },
+  updateCustomer(id,payload){ return this.request(`/api/v1/customers/${id}`, { method:'PUT', body: JSON.stringify(payload) }); },
 
+  getContacts(cid){ return this.request(`/api/v1/customers/${cid}/contacts`); },
+  addContact(cid,dto){ return this.request(`/api/v1/customers/${cid}/contacts`, { method:'POST', body: JSON.stringify(dto) }); },
+  verifyContact(cid,contactId){ return this.request(`/api/v1/customers/${cid}/contacts/${contactId}/verify`, { method:'PATCH' }); },
+  deleteContact(cid,contactId){ return this.request(`/api/v1/customers/${cid}/contacts/${contactId}`, { method:'DELETE' }); },
 
-    return String(value)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+  getAddresses(cid){ return this.request(`/api/v1/customers/${cid}/addresses`); },
+  addAddress(cid,dto){ return this.request(`/api/v1/customers/${cid}/addresses`, { method:'POST', body: JSON.stringify(dto) }); },
+  setPrimaryAddress(cid,addressId){ return this.request(`/api/v1/customers/${cid}/addresses/${addressId}/set-primary`, { method:'PATCH' }); },
+  deleteAddress(cid,addressId){ return this.request(`/api/v1/customers/${cid}/addresses/${addressId}`, { method:'DELETE' }); }
+};
 
+/* ---------------- demo/offline fallback data ---------------- */
+let DEMO_MODE = false;
+const demoStore = {
+  customer:{
+    customerId:1, customerNumber:'CUST-100245', firstName:'Asha', middleName:'', lastName:'Verma',
+    dateOfBirth:'1994-05-12', gender:'Female', email:'asha.verma@example.com', mobileNumber:'+91 98765 43210',
+    status:'ACTIVE', customerType:'INDIVIDUAL'
+  },
+  contacts:[
+    { contactId:1, customerId:1, contactType:'EMAIL', contactValue:'asha.verma@example.com', isVerified:true },
+    { contactId:2, customerId:1, contactType:'MOBILE', contactValue:'+91 98765 43210', isVerified:false }
+  ],
+  addresses:[
+    { addressId:1, customerId:1, addressType:'HOME', addressLine1:'21 MG Road', addressLine2:'', city:'Pune', state:'Maharashtra', country:'India', postalCode:'411001', isPrimary:true }
+  ]
+};
+
+/* =========================== session (sessionStorage) =========================== */
+const SESSION_KEY = 'cd_session';
+function saveSession(customerId){ sessionStorage.setItem(SESSION_KEY, JSON.stringify({ customerId, ts:Date.now() })); }
+function getSession(){ try{ return JSON.parse(sessionStorage.getItem(SESSION_KEY)); }catch(e){ return null; } }
+function clearSession(){ sessionStorage.removeItem(SESSION_KEY); }
+
+/* =============================== view / tab routing =============================== */
+function switchView(name){
+  document.querySelectorAll('[data-view]').forEach(v=>v.classList.remove('active'));
+  document.querySelector(`[data-view="${name}"]`).classList.add('active');
+  if(name==='config'){ document.getElementById('apiBaseInput').value = CONFIG.API_BASE_URL; }
+}
+function switchTab(name){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===name));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('hidden', p.dataset.tabPanel!==name));
+}
+function saveApiBase(){
+  const val = document.getElementById('apiBaseInput').value.trim();
+  if(val){ CONFIG.API_BASE_URL = val; localStorage.setItem('cd_api_base', val); }
+  switchView('login');
+  showToast('API base URL saved.');
 }
 
+/* =============================== toast =============================== */
+function showToast(msg, type='success'){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast glass px-5 py-3 text-sm font-medium flex items-center gap-2';
+  el.style.borderColor = type==='error' ? '#FCA5A5' : 'var(--border)';
+  el.innerHTML = `<span>${type==='error'?'⚠️':'✅'}</span><span>${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.transition='opacity .3s ease'; el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, 3200);
+}
 
-/* ===============================================================
-   INITIALIZATION
-================================================================ */
+function shakeField(fieldEl){
+  fieldEl.classList.add('shake');
+  setTimeout(()=>fieldEl.classList.remove('shake'), 400);
+}
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
+function setLoading(btn, loading, labelWhenIdle){
+  if(loading){
+    btn.disabled = true;
+    btn.dataset.label = btn.innerHTML;
+    btn.innerHTML = `<span class="spinner"></span> Please wait…`;
+  } else {
+    btn.disabled = false;
+    btn.innerHTML = labelWhenIdle || btn.dataset.label || btn.innerHTML;
+  }
+}
 
-        lucide.createIcons();
+/* =============================== dark mode =============================== */
+function toggleDark(){
+  document.documentElement.classList.toggle('dark');
+  const isDark = document.documentElement.classList.contains('dark');
+  ['darkIconLogin','darkIconDash'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.textContent = isDark ? '☀️' : '🌙';
+  });
+  localStorage.setItem('cd_dark', isDark ? '1':'0');
+}
+if(localStorage.getItem('cd_dark')==='1'){ document.documentElement.classList.add('dark'); }
 
-        initializeSpendingChart();
+/* logo draw-in */
+window.addEventListener('DOMContentLoaded', ()=>{
+  const path = document.getElementById('logoStroke');
+  if(path){ setTimeout(()=>{ path.style.transition='stroke-dashoffset 1s ease'; path.style.strokeDashoffset='0'; }, 200); }
+  ['darkIconLogin','darkIconDash'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.textContent = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+  });
+});
 
-        initializeLoanDonut();
-
-        updateCalculator();
-
-        animateCreditScore();
-
-        await loadCustomer();
-
-        animateNumber(
-            "availableCredit",
-            750000
-        );
-
+/* =============================== auth handlers =============================== */
+async function handleLogin(e){
+  e.preventDefault();
+  const identifier = document.getElementById('loginIdentifier').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const btn = document.getElementById('loginBtn');
+  setLoading(btn, true);
+  try{
+    let customer;
+    try{
+      customer = await API.login(identifier, password);
+    }catch(err){
+      DEMO_MODE = true;
+      await new Promise(r=>setTimeout(r,500));
+      customer = demoStore.customer;
     }
-);
+    saveSession(customer.customerId);
+    showToast(`Welcome back, ${customer.firstName}!`);
+    await enterDashboard(customer.customerId);
+  }catch(err){
+    shakeField(document.getElementById('loginPassword').parentElement);
+    showToast(err.message || 'Login failed', 'error');
+  }finally{
+    setLoading(btn, false, 'Sign in');
+  }
+}
 
+async function handleRegister(e){
+  e.preventDefault();
+  const pwd = document.getElementById('regPassword').value;
+  const pwd2 = document.getElementById('regPasswordConfirm').value;
+  if(pwd !== pwd2){
+    shakeField(document.getElementById('regPasswordConfirm').parentElement);
+    showToast('Passwords do not match', 'error');
+    return false;
+  }
+  const payload = {
+    firstName: document.getElementById('regFirstName').value.trim(),
+    lastName: document.getElementById('regLastName').value.trim(),
+    middleName: document.getElementById('regMiddleName').value.trim(),
+    dateOfBirth: document.getElementById('regDob').value || null,
+    gender: document.getElementById('regGender').value,
+    customerType: document.getElementById('regCustomerType').value,
+    email: document.getElementById('regEmail').value.trim(),
+    mobileNumber: document.getElementById('regMobile').value.trim(),
+    password: pwd,
+    status: 'PENDING'
+  };
+  const btn = document.getElementById('registerBtn');
+  setLoading(btn, true);
+  try{
+    let customer;
+    try{
+      customer = await API.register(payload);
+    }catch(err){
+      DEMO_MODE = true;
+      await new Promise(r=>setTimeout(r,500));
+      customer = { ...demoStore.customer, ...payload, customerId:1, customerNumber:'CUST-DEMO', status:'PENDING' };
+      demoStore.customer = customer;
+    }
+    saveSession(customer.customerId);
+    showToast('Account created! Setting up your dashboard…');
+    await enterDashboard(customer.customerId);
+  }catch(err){
+    showToast(err.message || 'Registration failed', 'error');
+  }finally{
+    setLoading(btn, false, 'Create account');
+  }
+}
+
+function handleLogout(){
+  clearSession();
+  DEMO_MODE = false;
+  switchView('login');
+  showToast('Logged out.');
+}
+
+/* =============================== dashboard bootstrap =============================== */
+let currentCustomerId = null;
+
+async function enterDashboard(customerId){
+  currentCustomerId = customerId;
+  switchView('dashboard');
+  switchTab('overview');
+  await refreshAll();
+}
+
+async function refreshAll(){
+  showSkeletons();
+  const dBanner = document.getElementById('demoBannerDash');
+  try{
+    const [customer, contacts, addresses] = await Promise.all([
+      fetchCustomerSafe(),
+      fetchContactsSafe(),
+      fetchAddressesSafe()
+    ]);
+    renderCustomer(customer);
+    renderContacts(contacts);
+    renderAddresses(addresses);
+  }catch(err){
+    showToast(err.message || 'Could not load dashboard data', 'error');
+  }
+  if(DEMO_MODE){
+    dBanner.textContent = 'Demo mode — API unreachable, showing sample data. Set your API base URL in the login screen.';
+    dBanner.classList.remove('hidden');
+  } else {
+    dBanner.classList.add('hidden');
+  }
+}
+
+async function fetchCustomerSafe(){
+  try{ return await API.getCustomer(currentCustomerId); }
+  catch(e){ DEMO_MODE = true; return demoStore.customer; }
+}
+async function fetchContactsSafe(){
+  try{ return await API.getContacts(currentCustomerId); }
+  catch(e){ DEMO_MODE = true; return demoStore.contacts; }
+}
+async function fetchAddressesSafe(){
+  try{ return await API.getAddresses(currentCustomerId); }
+  catch(e){ DEMO_MODE = true; return demoStore.addresses; }
+}
+
+function showSkeletons(){
+  document.getElementById('contactsList').innerHTML = skeletonCards(2);
+  document.getElementById('addressesList').innerHTML = skeletonCards(2);
+}
+function skeletonCards(n){
+  return Array.from({length:n}).map(()=>`<div class="glass p-5"><div class="skeleton h-4 w-24 mb-3"></div><div class="skeleton h-3 w-40"></div></div>`).join('');
+}
+
+/* =============================== render: customer =============================== */
+const STATUS_COLOR = { PENDING:'#F59E0B', ACTIVE:'#059669', INACTIVE:'#94A3B8', BLOCKED:'#DC2626', CLOSED:'#475569' };
+
+function renderCustomer(c){
+  document.getElementById('greetName').textContent = `${c.firstName} ${c.lastName}`;
+  document.getElementById('avatarInitials').textContent = (c.firstName?.[0]||'') + (c.lastName?.[0]||'');
+  document.getElementById('statCustomerNumber').textContent = c.customerNumber || '—';
+  document.getElementById('statCustomerStatus').textContent = c.status || '—';
+  document.getElementById('statCustomerType').textContent = c.customerType || '—';
+  document.getElementById('statusDot').style.background = STATUS_COLOR[c.status] || '#94A3B8';
+
+  document.getElementById('pFirstName').value = c.firstName || '';
+  document.getElementById('pLastName').value = c.lastName || '';
+  document.getElementById('pMiddleName').value = c.middleName || '';
+  document.getElementById('pDob').value = c.dateOfBirth || '';
+  document.getElementById('pGender').value = c.gender || '';
+  document.getElementById('pCustomerType').value = c.customerType || 'INDIVIDUAL';
+  document.getElementById('pEmail').value = c.email || '';
+  document.getElementById('pMobile').value = c.mobileNumber || '';
+  refreshFloatingLabels();
+}
+
+function refreshFloatingLabels(){
+  document.querySelectorAll('.field select').forEach(s=>{
+    s.parentElement.classList.toggle('has-value', !!s.value);
+  });
+}
+
+async function handleProfileUpdate(e){
+  e.preventDefault();
+  const payload = {
+    firstName: document.getElementById('pFirstName').value.trim(),
+    lastName: document.getElementById('pLastName').value.trim(),
+    middleName: document.getElementById('pMiddleName').value.trim(),
+    dateOfBirth: document.getElementById('pDob').value || null,
+    gender: document.getElementById('pGender').value,
+    customerType: document.getElementById('pCustomerType').value,
+    email: document.getElementById('pEmail').value.trim(),
+    mobileNumber: document.getElementById('pMobile').value.trim()
+  };
+  const btn = document.getElementById('profileSaveBtn');
+  setLoading(btn, true);
+  try{
+    let updated;
+    try{ updated = await API.updateCustomer(currentCustomerId, payload); }
+    catch(err){ DEMO_MODE = true; updated = { ...demoStore.customer, ...payload }; demoStore.customer = updated; }
+    renderCustomer(updated);
+    showToast('Profile updated.');
+  }catch(err){
+    showToast(err.message || 'Could not save profile', 'error');
+  }finally{
+    setLoading(btn, false, 'Save changes');
+  }
+}
+
+/* =============================== render: contacts =============================== */
+function openContactForm(){ document.getElementById('contactForm').classList.toggle('hidden'); }
+
+function renderContacts(list){
+  const wrap = document.getElementById('contactsList');
+  const empty = document.getElementById('contactsEmpty');
+  wrap.innerHTML = '';
+  empty.classList.toggle('hidden', list && list.length>0);
+  (list||[]).forEach((c,i)=>{
+    const card = document.createElement('div');
+    card.className = 'glass p-5 scale-tap';
+    card.style.animationDelay = (i*50)+'ms';
+    card.innerHTML = `
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wide" style="color:var(--emerald)">${c.contactType}</p>
+          <p class="font-medium mt-1">${c.contactValue}</p>
+        </div>
+        <span class="text-xs px-2 py-1 rounded-full" style="background:${c.isVerified?'rgba(5,150,105,.12)':'rgba(245,158,11,.15)'}; color:${c.isVerified?'#059669':'#B45309'}">
+          ${c.isVerified?'Verified':'Unverified'}
+        </span>
+      </div>
+      <div class="flex gap-2 mt-4">
+        ${!c.isVerified ? `<button class="btn-ghost text-xs px-3 py-1.5" onclick="verifyContact(${c.contactId})">Verify</button>` : ''}
+        <button class="btn-ghost text-xs px-3 py-1.5" onclick="deleteContact(${c.contactId})" style="color:#DC2626">Delete</button>
+      </div>`;
+    wrap.appendChild(card);
+  });
+  const primary = (list||[]).find(c=>c.isVerified) || (list||[])[0];
+  document.getElementById('overviewPrimaryContact').innerHTML = primary
+    ? `<p class="font-semibold">${primary.contactValue}</p><p class="text-xs mt-1">${primary.contactType} · ${primary.isVerified?'Verified':'Unverified'}</p>`
+    : 'No verified contact yet.';
+}
+
+async function handleAddContact(e){
+  e.preventDefault();
+  const dto = { contactType: document.getElementById('cType').value, contactValue: document.getElementById('cValue').value.trim(), isVerified:false };
+  if(!dto.contactType || !dto.contactValue) return false;
+  try{
+    try{ await API.addContact(currentCustomerId, dto); }
+    catch(err){ DEMO_MODE = true; demoStore.contacts.push({ contactId:Date.now(), customerId:currentCustomerId, ...dto }); }
+    showToast('Contact added.');
+    document.getElementById('contactForm').reset();
+    document.getElementById('contactForm').classList.add('hidden');
+    renderContacts(await fetchContactsSafe());
+  }catch(err){ showToast(err.message || 'Could not add contact', 'error'); }
+  return false;
+}
+async function verifyContact(id){
+  try{
+    try{ await API.verifyContact(currentCustomerId, id); }
+    catch(err){ DEMO_MODE = true; const c = demoStore.contacts.find(c=>c.contactId===id); if(c) c.isVerified = true; }
+    showToast('Contact verified.');
+    renderContacts(await fetchContactsSafe());
+  }catch(err){ showToast(err.message || 'Could not verify contact', 'error'); }
+}
+async function deleteContact(id){
+  if(!confirm('Delete this contact?')) return;
+  try{
+    try{ await API.deleteContact(currentCustomerId, id); }
+    catch(err){ DEMO_MODE = true; demoStore.contacts = demoStore.contacts.filter(c=>c.contactId!==id); }
+    showToast('Contact deleted.');
+    renderContacts(await fetchContactsSafe());
+  }catch(err){ showToast(err.message || 'Could not delete contact', 'error'); }
+}
+
+/* =============================== render: addresses =============================== */
+function openAddressForm(){ document.getElementById('addressForm').classList.toggle('hidden'); }
+
+function renderAddresses(list){
+  const wrap = document.getElementById('addressesList');
+  const empty = document.getElementById('addressesEmpty');
+  wrap.innerHTML = '';
+  empty.classList.toggle('hidden', list && list.length>0);
+  (list||[]).forEach((a,i)=>{
+    const card = document.createElement('div');
+    card.className = 'glass p-5 scale-tap';
+    card.style.animationDelay = (i*50)+'ms';
+    card.innerHTML = `
+      <div class="flex justify-between items-start">
+        <p class="text-xs font-semibold uppercase tracking-wide" style="color:var(--emerald)">${a.addressType}</p>
+        ${a.isPrimary ? `<span class="text-xs px-2 py-1 rounded-full" style="background:rgba(245,158,11,.15); color:#B45309;">Primary</span>` : ''}
+      </div>
+      <p class="font-medium mt-1">${a.addressLine1}${a.addressLine2 ? ', '+a.addressLine2 : ''}</p>
+      <p class="text-sm" style="color:var(--muted)">${[a.city,a.state,a.country,a.postalCode].filter(Boolean).join(', ')}</p>
+      <div class="flex gap-2 mt-4">
+        ${!a.isPrimary ? `<button class="btn-ghost text-xs px-3 py-1.5" onclick="setPrimaryAddress(${a.addressId})">Set primary</button>` : ''}
+        <button class="btn-ghost text-xs px-3 py-1.5" onclick="deleteAddress(${a.addressId})" style="color:#DC2626">Delete</button>
+      </div>`;
+    wrap.appendChild(card);
+  });
+  const primary = (list||[]).find(a=>a.isPrimary);
+  document.getElementById('overviewPrimaryAddress').innerHTML = primary
+    ? `<p class="font-semibold">${primary.addressLine1}</p><p class="text-xs mt-1">${[primary.city,primary.country].filter(Boolean).join(', ')}</p>`
+    : 'No primary address set.';
+}
+
+async function handleAddAddress(e){
+  e.preventDefault();
+  const dto = {
+    addressType: document.getElementById('aType').value,
+    addressLine1: document.getElementById('aLine1').value.trim(),
+    addressLine2: document.getElementById('aLine2').value.trim(),
+    city: document.getElementById('aCity').value.trim(),
+    state: document.getElementById('aState').value.trim(),
+    country: document.getElementById('aCountry').value.trim(),
+    postalCode: document.getElementById('aPostal').value.trim(),
+    isPrimary: document.getElementById('aPrimary').checked
+  };
+  if(!dto.addressType || !dto.addressLine1 || !dto.city || !dto.country) return false;
+  try{
+    try{ await API.addAddress(currentCustomerId, dto); }
+    catch(err){ DEMO_MODE = true; demoStore.addresses.push({ addressId:Date.now(), customerId:currentCustomerId, ...dto }); }
+    showToast('Address added.');
+    document.getElementById('addressForm').reset();
+    document.getElementById('addressForm').classList.add('hidden');
+    renderAddresses(await fetchAddressesSafe());
+  }catch(err){ showToast(err.message || 'Could not add address', 'error'); }
+  return false;
+}
+async function setPrimaryAddress(id){
+  try{
+    try{ await API.setPrimaryAddress(currentCustomerId, id); }
+    catch(err){ DEMO_MODE = true; demoStore.addresses.forEach(a=>a.isPrimary = a.addressId===id); }
+    showToast('Primary address updated.');
+    renderAddresses(await fetchAddressesSafe());
+  }catch(err){ showToast(err.message || 'Could not update address', 'error'); }
+}
+async function deleteAddress(id){
+  if(!confirm('Delete this address?')) return;
+  try{
+    try{ await API.deleteAddress(currentCustomerId, id); }
+    catch(err){ DEMO_MODE = true; demoStore.addresses = demoStore.addresses.filter(a=>a.addressId!==id); }
+    showToast('Address deleted.');
+    renderAddresses(await fetchAddressesSafe());
+  }catch(err){ showToast(err.message || 'Could not delete address', 'error'); }
+}
+
+/* =============================== boot =============================== */
+(function boot(){
+  const session = getSession();
+  if(session && session.customerId){
+    enterDashboard(session.customerId);
+  } else {
+    switchView('login');
+  }
+})();
 </script>
-
 </body>
 </html>
