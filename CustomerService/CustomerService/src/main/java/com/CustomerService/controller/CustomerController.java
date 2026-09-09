@@ -5,6 +5,7 @@ import com.CustomerService.dto.CustomerResponseDto;
 import com.CustomerService.dto.CustomerStatusUpdateDto;
 import com.CustomerService.entity.CustomerStatus;
 import com.CustomerService.service.CustomerService;
+import com.CustomerService.dto.LoginRequestDto;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,16 @@ public class CustomerController {
         CustomerResponseDto response = customerService.registerCustomer(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    @PostMapping("/login")
+public ResponseEntity<CustomerResponseDto> login(
+        @RequestBody LoginRequestDto request) {
+
+    CustomerResponseDto response = customerService.login(request);
+
+    return ResponseEntity.ok(response);
+}
+
 
     @GetMapping("/{customerId}")
     public ResponseEntity<CustomerResponseDto> getCustomerById(@PathVariable Long customerId) {

@@ -12,7 +12,7 @@ import com.CustomerService.exception.InvalidCustomerStatusException;
 import com.CustomerService.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -21,36 +21,82 @@ import java.util.stream.Collectors;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+private final PasswordEncoder passwordEncoder;
 
-    public CustomerService(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
+public CustomerService(
+        CustomerRepository customerRepository,
+        PasswordEncoder passwordEncoder) {
+
+    this.customerRepository = customerRepository;
+    this.passwordEncoder = passwordEncoder;
+}
+
+public CustomerResponseDto login(LoginRequestDto request) {
+
+    Customer customer = customerRepository.findByEmail(request.getEmail())
+            .orElseThrow(() ->
+                    new CustomerNotFoundException(
+                            "Invalid email or password"));
+
+    if (!passwordEncoder.matches(
+            request.getPassword(),
+            customer.getPassword())) {
+
+        throw new CustomerNotFoundException(
+                "Invalid email or password");
     }
+
+    if (customer.getStatus() == CustomerStatus.BLOCKED) {
+        throw new InvalidCustomerStatusException(
+                "Customer account is blocked");
+    }
+
+    if (customer.getStatus() == CustomerStatus.CLOSED) {
+        throw new InvalidCustomerStatusException(
+                "Customer account is closed");
+    }
+
+    return toResponseDto(customer);
+}
 
     @Transactional
-    public CustomerResponseDto registerCustomer(CustomerRequestDto request) {
-        if (customerRepository.existsByEmail(request.getEmail())) {
-            throw new DuplicateEmailException("A customer with email '" + request.getEmail() + "' already exists");
-        }
-        if (customerRepository.existsByMobileNumber(request.getMobileNumber())) {
-            throw new DuplicateMobileNumberException("A customer with mobile number '" + request.getMobileNumber() + "' already exists");
-        }
+public CustomerResponseDto registerCustomer(CustomerRequestDto request) {
 
-        Customer customer = new Customer();
-        customer.setCustomerNumber(generateCustomerNumber());
-        customer.setFirstName(request.getFirstName());
-        customer.setMiddleName(request.getMiddleName());
-        customer.setLastName(request.getLastName());
-        customer.setDateOfBirth(request.getDateOfBirth());
-        customer.setGender(request.getGender());
-        customer.setEmail(request.getEmail());
-        customer.setMobileNumber(request.getMobileNumber());
-        customer.setCustomerType(request.getCustomerType());
-        customer.setStatus(CustomerStatus.PENDING);
-
-        Customer saved = customerRepository.save(customer);
-        return toResponseDto(saved);
+    if (customerRepository.existsByEmail(request.getEmail())) {
+        throw new DuplicateEmailException(
+                "A customer with email '" + request.getEmail() + "' already exists"
+        );
     }
 
+    if (customerRepository.existsByMobileNumber(request.getMobileNumber())) {
+        throw new DuplicateMobileNumberException(
+                "A customer with mobile number '" + request.getMobileNumber() + "' already exists"
+        );
+    }
+
+    Customer customer = new Customer();
+
+    customer.setCustomerNumber(generateCustomerNumber());
+    customer.setFirstName(request.getFirstName());
+    customer.setMiddleName(request.getMiddleName());
+    customer.setLastName(request.getLastName());
+    customer.setDateOfBirth(request.getDateOfBirth());
+    customer.setGender(request.getGender());
+    customer.setEmail(request.getEmail());
+    customer.setMobileNumber(request.getMobileNumber());
+    customer.setCustomerType(request.getCustomerType());
+
+    // Encrypt password before saving
+    customer.setPassword(
+            passwordEncoder.encode(request.getPassword())
+    );
+
+    customer.setStatus(CustomerStatus.PENDING);
+
+    Customer saved = customerRepository.save(customer);
+
+    return toResponseDto(saved);
+}
     public CustomerResponseDto getCustomerById(Long customerId) {
         return toResponseDto(findCustomerOrThrow(customerId));
     }
