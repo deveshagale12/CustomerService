@@ -19,6 +19,10 @@ import java.util.stream.Collectors;
 import com.CustomerService.dto.LoginRequestDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.CustomerService.dto.LoginResponseDto;
+import com.CustomerService.dto.CustomerLoginDetailsDto;
+import com.CustomerService.dto.LoginRequestDto;
+import com.CustomerService.dto.LoginResponseDto;
+import com.CustomerService.security.JwtService;
 
 @Service
 public class CustomerService {
