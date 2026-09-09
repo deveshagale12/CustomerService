@@ -27,11 +27,28 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Allow browser CORS preflight requests
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
+ 
                         // Login and registration are public
                         .requestMatchers(
                                 "/api/v1/customers/login",
-                                "/api/v1/customers/register"
+                                "/api/v1/customers/register",
+                                "/api/v1/customers/{customerId}",
+                                "/api/v1/customers/email/{email}",
+                                "/api/v1/customers/mobile/{mobileNumber}",
+                                "/api/v1/customers/number/{customerNumber}",
+                                "/api/v1/customers/{customerId}",
+                                "/api/v1/customers/{customerId}/status",
+                                "/api/v1/customers/{customerId}/activate",
+                                "/api/v1/customers/{customerId}/block",
+                                "/api/v1/customers/{customerId}/close",
+                                "/api/v1/customers/{customerId}",
+                                "/api/v1/customers/{customerId}/contacts",
+                                "/api/v1/customers/{customerId}/addresses",
+                                "/api/v1/customers/{customerId}/addresses/primary",
+                                "/api/v1/customers/{customerId}/addresses/{addressId}",
+                                "/api/v1/customers/{customerId}/addresses/{addressId}/set-primary",
+                                "/api/v1/customers/{customerId}/addresses/{addressId}"
+
                         ).permitAll()
 
                         // Currently allow all other APIs
