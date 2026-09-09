@@ -44,7 +44,8 @@ public class CustomerController {
 public ResponseEntity<CustomerResponseDto> login(
         @RequestBody LoginRequestDto request) {
 
-    CustomerResponseDto response = customerService.login(request);
+    CustomerResponseDto response =
+            customerService.login(request);
 
     return ResponseEntity.ok(response);
 }

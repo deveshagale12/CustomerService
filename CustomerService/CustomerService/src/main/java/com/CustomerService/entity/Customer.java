@@ -57,7 +57,7 @@ public class Customer {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
+   @Column(nullable = false)
 private String password;
 
     public Customer() {

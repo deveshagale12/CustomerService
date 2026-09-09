@@ -16,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import com.CustomerService.dto.LoginRequestDto;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class CustomerService {
@@ -33,44 +35,53 @@ public CustomerService(
 
 public CustomerResponseDto login(LoginRequestDto request) {
 
-    Customer customer = customerRepository.findByEmail(request.getEmail())
+    Customer customer = customerRepository
+            .findByEmail(request.getEmail())
             .orElseThrow(() ->
                     new CustomerNotFoundException(
-                            "Invalid email or password"));
+                            "Invalid email or password"
+                    ));
 
     if (!passwordEncoder.matches(
             request.getPassword(),
             customer.getPassword())) {
 
         throw new CustomerNotFoundException(
-                "Invalid email or password");
+                "Invalid email or password"
+        );
     }
 
     if (customer.getStatus() == CustomerStatus.BLOCKED) {
         throw new InvalidCustomerStatusException(
-                "Customer account is blocked");
+                "Customer account is blocked"
+        );
     }
 
     if (customer.getStatus() == CustomerStatus.CLOSED) {
         throw new InvalidCustomerStatusException(
-                "Customer account is closed");
+                "Customer account is closed"
+        );
     }
 
     return toResponseDto(customer);
 }
 
-    @Transactional
+   @Transactional
 public CustomerResponseDto registerCustomer(CustomerRequestDto request) {
 
     if (customerRepository.existsByEmail(request.getEmail())) {
         throw new DuplicateEmailException(
-                "A customer with email '" + request.getEmail() + "' already exists"
+                "A customer with email '" +
+                request.getEmail() +
+                "' already exists"
         );
     }
 
     if (customerRepository.existsByMobileNumber(request.getMobileNumber())) {
         throw new DuplicateMobileNumberException(
-                "A customer with mobile number '" + request.getMobileNumber() + "' already exists"
+                "A customer with mobile number '" +
+                request.getMobileNumber() +
+                "' already exists"
         );
     }
 
@@ -86,7 +97,7 @@ public CustomerResponseDto registerCustomer(CustomerRequestDto request) {
     customer.setMobileNumber(request.getMobileNumber());
     customer.setCustomerType(request.getCustomerType());
 
-    // Encrypt password before saving
+    // Encrypt password
     customer.setPassword(
             passwordEncoder.encode(request.getPassword())
     );
@@ -97,6 +108,8 @@ public CustomerResponseDto registerCustomer(CustomerRequestDto request) {
 
     return toResponseDto(saved);
 }
+
+
     public CustomerResponseDto getCustomerById(Long customerId) {
         return toResponseDto(findCustomerOrThrow(customerId));
     }
