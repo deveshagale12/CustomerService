@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import com.CustomerService.dto.LoginRequestDto;
+import com.CustomerService.dto.LoginResponseDto;
 
 import java.util.List;
 
@@ -40,12 +42,11 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PostMapping("/login")
-public ResponseEntity<CustomerResponseDto> login(
-        @RequestBody LoginRequestDto request) {
+   @PostMapping("/login")
+public ResponseEntity<LoginResponseDto> login(
+        @Valid @RequestBody LoginRequestDto request) {
 
-    CustomerResponseDto response =
-            customerService.login(request);
+    LoginResponseDto response = customerService.login(request);
 
     return ResponseEntity.ok(response);
 }

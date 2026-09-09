@@ -18,6 +18,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import com.CustomerService.dto.LoginRequestDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import com.CustomerService.dto.LoginResponseDto;
 
 @Service
 public class CustomerService {
@@ -33,37 +34,41 @@ public CustomerService(
     this.passwordEncoder = passwordEncoder;
 }
 
-public CustomerResponseDto login(LoginRequestDto request) {
+public LoginResponseDto login(LoginRequestDto request) {
 
-    Customer customer = customerRepository
-            .findByEmail(request.getEmail())
+    Customer customer = customerRepository.findByEmail(request.getEmail())
             .orElseThrow(() ->
-                    new CustomerNotFoundException(
-                            "Invalid email or password"
-                    ));
+                    new CustomerNotFoundException("Invalid email or password"));
 
     if (!passwordEncoder.matches(
             request.getPassword(),
             customer.getPassword())) {
 
-        throw new CustomerNotFoundException(
-                "Invalid email or password"
-        );
+        throw new CustomerNotFoundException("Invalid email or password");
     }
 
     if (customer.getStatus() == CustomerStatus.BLOCKED) {
         throw new InvalidCustomerStatusException(
-                "Customer account is blocked"
-        );
+                "Customer account is blocked");
     }
 
     if (customer.getStatus() == CustomerStatus.CLOSED) {
         throw new InvalidCustomerStatusException(
-                "Customer account is closed"
-        );
+                "Customer account is closed");
     }
 
-    return toResponseDto(customer);
+    return new LoginResponseDto(
+            "Login successful",
+            customer.getCustomerId(),
+            customer.getCustomerNumber(),
+            customer.getFirstName(),
+            customer.getMiddleName(),
+            customer.getLastName(),
+            customer.getEmail(),
+            customer.getMobileNumber(),
+            customer.getCustomerType().name(),
+            customer.getStatus().name()
+    );
 }
 
    @Transactional
