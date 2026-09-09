@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finora — Customer Login & Registration</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --emerald:#059669;
+    --emerald-dark:#047857;
+    --navy:#0F172A;
+    --gold:#F59E0B;
+    --bg:#F8FAFC;
+    --white:#ffffff;
+    --text:#0F172A;
+    --muted:#64748B;
+    --border:rgba(15,23,42,.10);
+    --shadow:0 25px 70px rgba(15,23,42,.12);
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    min-height:100vh;
+    font-family:Inter,sans-serif;
+    background:
+        radial-gradient(circle at 10% 20%,rgba(5,150,105,.12),transparent 28%),
+        radial-gradient(circle at 90% 80%,rgba(245,158,11,.10),transparent 30%),
+        var(--bg);
+    color:var(--text);
+    overflow-x:hidden;
+}
+
+button,input,select{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+.app{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:25px;
+    position:relative;
+    overflow:hidden;
+}
+
+/* PARTICLES */
+
+.particle{
+    position:absolute;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(255,255,255,.55);
+    border:1px solid rgba(255,255,255,.7);
+    box-shadow:0 10px 30px rgba(15,23,42,.08);
+    animation:float 7s ease-in-out infinite;
+    pointer-events:none;
+}
+
+.particle:nth-child(1){left:5%;top:15%;animation-delay:-1s}
+.particle:nth-child(2){left:18%;bottom:10%;animation-delay:-3s}
+.particle:nth-child(3){right:8%;top:12%;animation-delay:-2s}
+.particle:nth-child(4){right:20%;bottom:15%;animation-delay:-4s}
+.particle:nth-child(5){left:48%;top:5%;animation-delay:-5s}
+
+@keyframes float{
+    0%,100%{transform:translateY(0) rotate(0)}
+    50%{transform:translateY(-25px) rotate(8deg)}
+}
+
+/* MAIN */
+
+.auth-shell{
+    width:min(1180px,100%);
+    min-height:700px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    background:rgba(255,255,255,.72);
+    backdrop-filter:blur(25px);
+    border:1px solid rgba(255,255,255,.8);
+    border-radius:28px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    position:relative;
+    z-index:2;
+}
+
+/* LEFT */
+
+.brand-panel{
+    background:
+        linear-gradient(145deg,rgba(15,23,42,.97),rgba(5,150,105,.93)),
+        var(--navy);
+    color:white;
+    padding:55px;
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.brand-panel::before{
+    content:"";
+    position:absolute;
+    width:450px;
+    height:450px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,.10);
+    right:-200px;
+    top:-160px;
+}
+
+.brand-panel::after{
+    content:"";
+    position:absolute;
+    width:350px;
+    height:350px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,.08);
+    left:-200px;
+    bottom:-170px;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:13px;
+    position:relative;
+    z-index:2;
+}
+
+.logo-icon{
+    width:48px;
+    height:48px;
+    border-radius:15px;
+    background:linear-gradient(135deg,var(--gold),#FBBF24);
+    display:grid;
+    place-items:center;
+    color:var(--navy);
+    font-size:23px;
+    font-weight:800;
+    box-shadow:0 12px 30px rgba(245,158,11,.25);
+}
+
+.logo-name{
+    font-family:"Plus Jakarta Sans";
+    font-size:25px;
+    font-weight:800;
+}
+
+.brand-content{
+    position:relative;
+    z-index:2;
+}
+
+.brand-content h1{
+    font-family:"Plus Jakarta Sans";
+    font-size:clamp(38px,4vw,62px);
+    line-height:1.05;
+    letter-spacing:-2px;
+    margin-bottom:25px;
+}
+
+.brand-content h1 span{
+    color:#6EE7B7;
+}
+
+.brand-content p{
+    color:rgba(255,255,255,.72);
+    line-height:1.8;
+    max-width:450px;
+    font-size:16px;
+}
+
+.features{
+    display:grid;
+    gap:13px;
+    margin-top:35px;
+}
+
+.feature{
+    display:flex;
+    align-items:center;
+    gap:13px;
+    color:rgba(255,255,255,.9);
+}
+
+.feature-icon{
+    width:34px;
+    height:34px;
+    border-radius:10px;
+    background:rgba(255,255,255,.10);
+    display:grid;
+    place-items:center;
+    color:#6EE7B7;
+}
+
+.brand-footer{
+    position:relative;
+    z-index:2;
+    color:rgba(255,255,255,.45);
+    font-size:12px;
+}
+
+/* RIGHT */
+
+.form-panel{
+    padding:50px clamp(30px,5vw,65px);
+    display:flex;
+    align-items:center;
+}
+
+.form-container{
+    width:100%;
+    max-width:460px;
+    margin:auto;
+}
+
+.form-header{
+    margin-bottom:30px;
+}
+
+.form-header h2{
+    font-family:"Plus Jakarta Sans";
+    font-size:34px;
+    letter-spacing:-1px;
+    margin-bottom:8px;
+}
+
+.form-header p{
+    color:var(--muted);
+    font-size:14px;
+}
+
+.mode-switch{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    padding:5px;
+    background:#F1F5F9;
+    border-radius:13px;
+    margin-bottom:28px;
+}
+
+.mode-btn{
+    border:0;
+    background:transparent;
+    padding:11px;
+    border-radius:9px;
+    color:var(--muted);
+    font-weight:600;
+    transition:.25s;
+}
+
+.mode-btn.active{
+    background:white;
+    color:var(--navy);
+    box-shadow:0 4px 15px rgba(15,23,42,.08);
+}
+
+.form{
+    display:none;
+    animation:pageIn .45s ease;
+}
+
+.form.active{
+    display:block;
+}
+
+@keyframes pageIn{
+    from{opacity:0;transform:translateY(20px)}
+    to{opacity:1;transform:translateY(0)}
+}
+
+/* INPUT */
+
+.input-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+}
+
+.field{
+    position:relative;
+    margin-bottom:18px;
+}
+
+.field.full{
+    grid-column:1/-1;
+}
+
+.field input,
+.field select{
+    width:100%;
+    height:58px;
+    border:1px solid var(--border);
+    border-radius:14px;
+    outline:none;
+    padding:20px 15px 6px;
+    background:rgba(248,250,252,.8);
+    color:var(--text);
+    transition:.25s;
+}
+
+.field select{
+    padding:8px 15px;
+}
+
+.field label{
+    position:absolute;
+    left:15px;
+    top:19px;
+    color:var(--muted);
+    font-size:14px;
+    pointer-events:none;
+    transition:.2s;
+}
+
+.field input:focus,
+.field input:not(:placeholder-shown){
+    border-color:var(--emerald);
+    box-shadow:0 0 0 4px rgba(5,150,105,.08);
+}
+
+.field input:focus + label,
+.field input:not(:placeholder-shown) + label{
+    top:8px;
+    font-size:10px;
+    color:var(--emerald);
+    font-weight:700;
+}
+
+/* PASSWORD */
+
+.password-wrap{
+    position:relative;
+}
+
+.password-toggle{
+    position:absolute;
+    right:14px;
+    top:18px;
+    border:0;
+    background:none;
+    color:var(--muted);
+}
+
+/* BUTTON */
+
+.primary-btn{
+    width:100%;
+    height:56px;
+    border:0;
+    border-radius:15px;
+    background:linear-gradient(135deg,var(--gold),#FBBF24);
+    color:var(--navy);
+    font-weight:800;
+    box-shadow:0 12px 28px rgba(245,158,11,.22);
+    transition:.2s;
+    position:relative;
+    overflow:hidden;
+}
+
+.primary-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 16px 35px rgba(245,158,11,.30);
+}
+
+.primary-btn:active{
+    transform:scale(.97);
+}
+
+.primary-btn.loading{
+    pointer-events:none;
+    color:transparent;
+}
+
+.primary-btn.loading::after{
+    content:"";
+    position:absolute;
+    width:20px;
+    height:20px;
+    border:3px solid rgba(15,23,42,.25);
+    border-top-color:var(--navy);
+    border-radius:50%;
+    animation:spin .7s linear infinite;
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg)}
+}
+
+/* DIVIDER */
+
+.divider{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    color:#94A3B8;
+    font-size:12px;
+    margin:22px 0;
+}
+
+.divider::before,
+.divider::after{
+    content:"";
+    height:1px;
+    flex:1;
+    background:#E2E8F0;
+}
+
+.socials{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+
+.social{
+    height:48px;
+    border:1px solid #E2E8F0;
+    background:white;
+    border-radius:13px;
+    font-weight:600;
+    transition:.2s;
+}
+
+.social:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 20px rgba(15,23,42,.07);
+}
+
+.message{
+    display:none;
+    margin-bottom:18px;
+    padding:13px 15px;
+    border-radius:12px;
+    font-size:13px;
+}
+
+.message.error{
+    display:block;
+    background:#FEF2F2;
+    color:#B91C1C;
+    border:1px solid #FECACA;
+}
+
+.message.success{
+    display:block;
+    background:#ECFDF5;
+    color:#047857;
+    border:1px solid #A7F3D0;
+}
+
+.login-extra{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:4px 0 20px;
+    font-size:12px;
+    color:var(--muted);
+}
+
+.check{
+    display:flex;
+    align-items:center;
+    gap:7px;
+}
+
+.check input{
+    accent-color:var(--emerald);
+}
+
+/* SUCCESS */
+
+.success-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(15,23,42,.88);
+    backdrop-filter:blur(15px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+}
+
+.success-overlay.show{
+    display:flex;
+}
+
+.success-box{
+    text-align:center;
+    color:white;
+    animation:successIn .5s ease;
+}
+
+@keyframes successIn{
+    from{opacity:0;transform:scale(.7)}
+    to{opacity:1;transform:scale(1)}
+}
+
+.success-circle{
+    width:100px;
+    height:100px;
+    margin:auto auto 25px;
+    border-radius:50%;
+    background:var(--emerald);
+    display:grid;
+    place-items:center;
+    box-shadow:0 0 0 15px rgba(5,150,105,.12);
+}
+
+.success-circle svg{
+    width:55px;
+    height:55px;
+    fill:none;
+    stroke:white;
+    stroke-width:4;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+.success-circle path{
+    stroke-dasharray:100;
+    stroke-dashoffset:100;
+    animation:draw .8s .2s forwards;
+}
+
+@keyframes draw{
+    to{stroke-dashoffset:0}
+}
+
+@media(max-width:850px){
+    .app{
+        padding:12px;
+    }
+
+    .auth-shell{
+        grid-template-columns:1fr;
+        min-height:auto;
+        border-radius:22px;
+    }
+
+    .brand-panel{
+        padding:30px;
+        min-height:390px;
+    }
+
+    .brand-content h1{
+        font-size:40px;
+    }
+
+    .brand-footer{
+        display:none;
+    }
+
+    .form-panel{
+        padding:35px 25px;
+    }
+}
+
+@media(max-width:520px){
+    .input-grid{
+        grid-template-columns:1fr;
+    }
+
+    .field.full{
+        grid-column:auto;
+    }
+
+    .brand-panel{
+        min-height:350px;
+    }
+
+    .brand-content p{
+        font-size:14px;
+    }
+
+    .features{
+        margin-top:22px;
+    }
+
+    .feature{
+        font-size:13px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <div class="particle">₹</div>
+    <div class="particle">$</div>
+    <div class="particle">€</div>
+    <div class="particle">₹</div>
+    <div class="particle">$</div>
+
+    <div class="auth-shell">
+
+        <!-- BRAND -->
+        <section class="brand-panel">
+
+            <div class="logo">
+                <div class="logo-icon">₹</div>
+                <div class="logo-name">FINORA</div>
+            </div>
+
+            <div class="brand-content">
+
+                <h1>
+                    Your money.<br>
+                    <span>Your future.</span>
+                </h1>
+
+                <p>
+                    A smarter way to manage loans, payments and
+                    your financial journey — all from one secure place.
+                </p>
+
+                <div class="features">
+
+                    <div class="feature">
+                        <div class="feature-icon">✓</div>
+                        <span>Instant loan application</span>
+                    </div>
+
+                    <div class="feature">
+                        <div class="feature-icon">✓</div>
+                        <span>Real-time loan tracking</span>
+                    </div>
+
+                    <div class="feature">
+                        <div class="feature-icon">✓</div>
+                        <span>Secure financial ecosystem</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="brand-footer">
+                © 2026 Finora Financial Services
+            </div>
+
+        </section>
+
+        <!-- FORM -->
+        <section class="form-panel">
+
+            <div class="form-container">
+
+                <div class="form-header">
+                    <h2 id="formTitle">Welcome back</h2>
+                    <p id="formSubtitle">
+                        Sign in to continue to your financial dashboard.
+                    </p>
+                </div>
+
+                <div class="mode-switch">
+                    <button
+                        class="mode-btn active"
+                        id="loginMode"
+                        onclick="switchMode('login')">
+                        Login
+                    </button>
+
+                    <button
+                        class="mode-btn"
+                        id="registerMode"
+                        onclick="switchMode('register')">
+                        Create account
+                    </button>
+                </div>
+
+                <div id="loginMessage" class="message"></div>
+                <div id="registerMessage" class="message"></div>
+
+                <!-- LOGIN -->
+                <form id="loginForm" class="form active">
+
+                    <div class="field">
+                        <input
+                            type="email"
+                            id="loginEmail"
+                            placeholder=" "
+                            autocomplete="email"
+                            required>
+                        <label>Email address</label>
+                    </div>
+
+                    <div class="field">
+                        <div class="password-wrap">
+                            <input
+                                type="password"
+                                id="loginPassword"
+                                placeholder=" "
+                                autocomplete="current-password"
+                                required>
+                            <label>Password</label>
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                onclick="togglePassword('loginPassword',this)">
+                                👁
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="login-extra">
+                        <label class="check">
+                            <input type="checkbox" id="remember">
+                            Remember me
+                        </label>
+
+                        <span>Secure login</span>
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="primary-btn"
+                        id="loginButton">
+                        Sign in securely
+                    </button>
+
+                    <div class="divider">OR CONTINUE WITH</div>
+
+                    <div class="socials">
+                        <button type="button" class="social">
+                            Google
+                        </button>
+
+                        <button type="button" class="social">
+                            Phone
+                        </button>
+                    </div>
+
+                </form>
+
+                <!-- REGISTER -->
+                <form id="registerForm" class="form">
+
+                    <div class="input-grid">
+
+                        <div class="field">
+                            <input
+                                type="text"
+                                id="firstName"
+                                placeholder=" "
+                                required>
+                            <label>First name</label>
+                        </div>
+
+                        <div class="field">
+                            <input
+                                type="text"
+                                id="middleName"
+                                placeholder=" ">
+                            <label>Middle name</label>
+                        </div>
+
+                        <div class="field">
+                            <input
+                                type="text"
+                                id="lastName"
+                                placeholder=" "
+                                required>
+                            <label>Last name</label>
+                        </div>
+
+                        <div class="field">
+                            <input
+                                type="date"
+                                id="dateOfBirth"
+                                required>
+                        </div>
+
+                        <div class="field">
+                            <select id="gender" required>
+                                <option value="">Select gender</option>
+                                <option value="MALE">Male</option>
+                                <option value="FEMALE">Female</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <input
+                                type="tel"
+                                id="mobileNumber"
+                                placeholder=" "
+                                required>
+                            <label>Mobile number</label>
+                        </div>
+
+                        <div class="field full">
+                            <input
+                                type="email"
+                                id="registerEmail"
+                                placeholder=" "
+                                required>
+                            <label>Email address</label>
+                        </div>
+
+                        <div class="field full">
+                            <select id="customerType" required>
+                                <option value="INDIVIDUAL">
+                                    Individual customer
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="field full">
+                            <div class="password-wrap">
+                                <input
+                                    type="password"
+                                    id="registerPassword"
+                                    placeholder=" "
+                                    required
+                                    minlength="1">
+                                <label>Create password</label>
+
+                                <button
+                                    type="button"
+                                    class="password-toggle"
+                                    onclick="togglePassword('registerPassword',this)">
+                                    👁
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="primary-btn"
+                        id="registerButton">
+                        Create my account
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </div>
+</div>
+
+<!-- SUCCESS -->
+<div class="success-overlay" id="successOverlay">
+
+    <div class="success-box">
+
+        <div class="success-circle">
+
+            <svg viewBox="0 0 52 52">
+                <path d="M14 27 L22 35 L39 17"/>
+            </svg>
+
+        </div>
+
+        <h2 id="successTitle">Login successful</h2>
+
+        <p id="successText">
+            Taking you to your dashboard...
+        </p>
+
+    </div>
+
+</div>
+
+<script>
+
+const API_BASE =
+    "https://customerservice-mmah.onrender.com/api/v1/customers";
+
+const API_KEY =
+    "my-secret-api-key-12345";
+
+/* =========================
+   MODE
+========================= */
+
+function switchMode(mode){
+
+    const loginForm =
+        document.getElementById("loginForm");
+
+    const registerForm =
+        document.getElementById("registerForm");
+
+    const loginMode =
+        document.getElementById("loginMode");
+
+    const registerMode =
+        document.getElementById("registerMode");
+
+    const title =
+        document.getElementById("formTitle");
+
+    const subtitle =
+        document.getElementById("formSubtitle");
+
+    clearMessages();
+
+    if(mode === "login"){
+
+        loginForm.classList.add("active");
+        registerForm.classList.remove("active");
+
+        loginMode.classList.add("active");
+        registerMode.classList.remove("active");
+
+        title.textContent = "Welcome back";
+        subtitle.textContent =
+            "Sign in to continue to your financial dashboard.";
+
+    }else{
+
+        registerForm.classList.add("active");
+        loginForm.classList.remove("active");
+
+        registerMode.classList.add("active");
+        loginMode.classList.remove("active");
+
+        title.textContent = "Create your account";
+        subtitle.textContent =
+            "Join Finora and start your smarter financial journey.";
+
+    }
+}
+
+/* =========================
+   PASSWORD
+========================= */
+
+function togglePassword(id,button){
+
+    const input =
+        document.getElementById(id);
+
+    if(input.type === "password"){
+
+        input.type = "text";
+        button.textContent = "🙈";
+
+    }else{
+
+        input.type = "password";
+        button.textContent = "👁";
+
+    }
+}
+
+/* =========================
+   MESSAGES
+========================= */
+
+function clearMessages(){
+
+    document
+        .querySelectorAll(".message")
+        .forEach(el=>{
+            el.className = "message";
+            el.textContent = "";
+        });
+}
+
+function showMessage(id,message,type){
+
+    const el =
+        document.getElementById(id);
+
+    el.className =
+        "message " + type;
+
+    el.textContent = message;
+}
+
+/* =========================
+   AUTH STORAGE
+========================= */
+
+function saveAuthentication(data){
+
+    localStorage.setItem(
+        "customerToken",
+        data.token
+    );
+
+    localStorage.setItem(
+        "customer",
+        JSON.stringify(data.customer)
+    );
+
+    localStorage.setItem(
+        "isAuthenticated",
+        "true"
+    );
+}
+
+/* =========================
+   LOGIN
+========================= */
+
+document
+.getElementById("loginForm")
+.addEventListener("submit", async function(e){
+
+    e.preventDefault();
+
+    const button =
+        document.getElementById("loginButton");
+
+    const email =
+        document
+        .getElementById("loginEmail")
+        .value
+        .trim();
+
+    const password =
+        document
+        .getElementById("loginPassword")
+        .value;
+
+    clearMessages();
+
+    button.classList.add("loading");
+
+    try{
+
+        const response =
+            await fetch(
+                `${API_BASE}/login`,
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json",
+
+                        "X-API-KEY":
+                            API_KEY
+                    },
+
+                    body:JSON.stringify({
+                        email,
+                        password
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                "Invalid email or password"
+            );
+        }
+
+        /*
+         * Save JWT + customer
+         */
+
+        saveAuthentication(data);
+
+        /*
+         * Success animation
+         */
+
+        document
+            .getElementById("successTitle")
+            .textContent =
+            "Login successful";
+
+        document
+            .getElementById("successText")
+            .textContent =
+            `Welcome ${data.customer.firstName}! Redirecting...`;
+
+        document
+            .getElementById("successOverlay")
+            .classList.add("show");
+
+        /*
+         * Redirect
+         */
+
+        setTimeout(()=>{
+
+            window.location.href =
+                "CustomerDashboard.html";
+
+        },1200);
+
+    }catch(error){
+
+        showMessage(
+            "loginMessage",
+            error.message,
+            "error"
+        );
+
+        /*
+         * Shake effect
+         */
+
+        const form =
+            document.getElementById("loginForm");
+
+        form.animate(
+            [
+                {transform:"translateX(0)"},
+                {transform:"translateX(-8px)"},
+                {transform:"translateX(8px)"},
+                {transform:"translateX(-5px)"},
+                {transform:"translateX(5px)"},
+                {transform:"translateX(0)"}
+            ],
+            {
+                duration:400
+            }
+        );
+
+    }finally{
+
+        button.classList.remove("loading");
+
+    }
+
+});
+
+/* =========================
+   REGISTER
+========================= */
+
+document
+.getElementById("registerForm")
+.addEventListener("submit", async function(e){
+
+    e.preventDefault();
+
+    const button =
+        document.getElementById("registerButton");
+
+    clearMessages();
+
+    const payload = {
+
+        firstName:
+            document
+            .getElementById("firstName")
+            .value
+            .trim(),
+
+        middleName:
+            document
+            .getElementById("middleName")
+            .value
+            .trim(),
+
+        lastName:
+            document
+            .getElementById("lastName")
+            .value
+            .trim(),
+
+        dateOfBirth:
+            document
+            .getElementById("dateOfBirth")
+            .value,
+
+        gender:
+            document
+            .getElementById("gender")
+            .value,
+
+        email:
+            document
+            .getElementById("registerEmail")
+            .value
+            .trim(),
+
+        mobileNumber:
+            document
+            .getElementById("mobileNumber")
+            .value
+            .trim(),
+
+        customerType:
+            "INDIVIDUAL",
+
+        password:
+            document
+            .getElementById("registerPassword")
+            .value
+    };
+
+    button.classList.add("loading");
+
+    try{
+
+        const response =
+            await fetch(
+                `${API_BASE}/register`,
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json",
+
+                        "X-API-KEY":
+                            API_KEY
+                    },
+
+                    body:JSON.stringify(payload)
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if(!response.ok){
+
+            if(response.status === 409){
+
+                throw new Error(
+                    "An account with this email already exists. Please login instead."
+                );
+
+            }
+
+            throw new Error(
+                data.message ||
+                "Registration failed"
+            );
+        }
+
+        showMessage(
+            "registerMessage",
+            "Account created successfully! Please login.",
+            "success"
+        );
+
+        /*
+         * Automatically move to Login
+         */
+
+        setTimeout(()=>{
+
+            document
+                .getElementById("loginEmail")
+                .value =
+                payload.email;
+
+            switchMode("login");
+
+        },1000);
+
+    }catch(error){
+
+        showMessage(
+            "registerMessage",
+            error.message,
+            "error"
+        );
+
+    }finally{
+
+        button.classList.remove("loading");
+
+    }
+
+});
+
+/* =========================
+   CHECK EXISTING SESSION
+========================= */
+
+(function(){
+
+    const token =
+        localStorage.getItem("customerToken");
+
+    const authenticated =
+        localStorage.getItem("isAuthenticated");
+
+    /*
+     * Don't automatically redirect while
+     * user is intentionally opening login page
+     * unless an active session exists.
+     */
+
+    if(token && authenticated === "true"){
+
+        // Uncomment if you want automatic redirect:
+        //
+        // window.location.href =
+        //     "CustomerDashboard.html";
+
+    }
+
+})();
+
+</script>
+
+</body>
+</html>
