@@ -23,28 +23,32 @@ import com.CustomerService.dto.LoginResponseDto;
 @Service
 public class CustomerService {
 
-    private final CustomerRepository customerRepository;
+  private final CustomerRepository customerRepository;
 private final PasswordEncoder passwordEncoder;
+private final JwtService jwtService;
 
 public CustomerService(
         CustomerRepository customerRepository,
-        PasswordEncoder passwordEncoder) {
+        PasswordEncoder passwordEncoder,
+        JwtService jwtService) {
 
     this.customerRepository = customerRepository;
     this.passwordEncoder = passwordEncoder;
+    this.jwtService = jwtService;
 }
-
 public LoginResponseDto login(LoginRequestDto request) {
 
     Customer customer = customerRepository.findByEmail(request.getEmail())
             .orElseThrow(() ->
-                    new CustomerNotFoundException("Invalid email or password"));
+                    new CustomerNotFoundException(
+                            "Invalid email or password"));
 
     if (!passwordEncoder.matches(
             request.getPassword(),
             customer.getPassword())) {
 
-        throw new CustomerNotFoundException("Invalid email or password");
+        throw new CustomerNotFoundException(
+                "Invalid email or password");
     }
 
     if (customer.getStatus() == CustomerStatus.BLOCKED) {
@@ -57,20 +61,34 @@ public LoginResponseDto login(LoginRequestDto request) {
                 "Customer account is closed");
     }
 
-    return new LoginResponseDto(
-            "Login successful",
+    String token = jwtService.generateToken(
             customer.getCustomerId(),
-            customer.getCustomerNumber(),
-            customer.getFirstName(),
-            customer.getMiddleName(),
-            customer.getLastName(),
-            customer.getEmail(),
-            customer.getMobileNumber(),
-            customer.getCustomerType().name(),
+            customer.getEmail()
+    );
+
+    CustomerLoginDetailsDto customerDetails =
+            new CustomerLoginDetailsDto();
+
+    customerDetails.setCustomerId(customer.getCustomerId());
+    customerDetails.setCustomerNumber(customer.getCustomerNumber());
+    customerDetails.setFirstName(customer.getFirstName());
+    customerDetails.setMiddleName(customer.getMiddleName());
+    customerDetails.setLastName(customer.getLastName());
+    customerDetails.setEmail(customer.getEmail());
+    customerDetails.setMobileNumber(customer.getMobileNumber());
+    customerDetails.setCustomerType(
+            customer.getCustomerType().name()
+    );
+    customerDetails.setStatus(
             customer.getStatus().name()
     );
-}
 
+    return new LoginResponseDto(
+            "Login successful",
+            token,
+            customerDetails
+    );
+}
    @Transactional
 public CustomerResponseDto registerCustomer(CustomerRequestDto request) {
 

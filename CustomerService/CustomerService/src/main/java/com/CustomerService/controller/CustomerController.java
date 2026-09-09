@@ -51,7 +51,6 @@ public ResponseEntity<LoginResponseDto> login(
     return ResponseEntity.ok(response);
 }
 
-
     @GetMapping("/{customerId}")
     public ResponseEntity<CustomerResponseDto> getCustomerById(@PathVariable Long customerId) {
         return ResponseEntity.ok(customerService.getCustomerById(customerId));

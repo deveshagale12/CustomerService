@@ -3,41 +3,20 @@ package com.CustomerService.dto;
 public class LoginResponseDto {
 
     private String message;
-    private Long customerId;
-    private String customerNumber;
-    private String firstName;
-    private String middleName;
-    private String lastName;
-    private String email;
-    private String mobileNumber;
-    private String customerType;
-    private String status;
+    private String token;
+    private CustomerLoginDetailsDto customer;
 
     public LoginResponseDto() {
     }
 
     public LoginResponseDto(
             String message,
-            Long customerId,
-            String customerNumber,
-            String firstName,
-            String middleName,
-            String lastName,
-            String email,
-            String mobileNumber,
-            String customerType,
-            String status) {
+            String token,
+            CustomerLoginDetailsDto customer) {
 
         this.message = message;
-        this.customerId = customerId;
-        this.customerNumber = customerNumber;
-        this.firstName = firstName;
-        this.middleName = middleName;
-        this.lastName = lastName;
-        this.email = email;
-        this.mobileNumber = mobileNumber;
-        this.customerType = customerType;
-        this.status = status;
+        this.token = token;
+        this.customer = customer;
     }
 
     public String getMessage() {
@@ -48,75 +27,19 @@ public class LoginResponseDto {
         this.message = message;
     }
 
-    public Long getCustomerId() {
-        return customerId;
+    public String getToken() {
+        return token;
     }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public void setToken(String token) {
+        this.token = token;
     }
 
-    public String getCustomerNumber() {
-        return customerNumber;
+    public CustomerLoginDetailsDto getCustomer() {
+        return customer;
     }
 
-    public void setCustomerNumber(String customerNumber) {
-        this.customerNumber = customerNumber;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getMiddleName() {
-        return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-        this.middleName = middleName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getMobileNumber() {
-        return mobileNumber;
-    }
-
-    public void setMobileNumber(String mobileNumber) {
-        this.mobileNumber = mobileNumber;
-    }
-
-    public String getCustomerType() {
-        return customerType;
-    }
-
-    public void setCustomerType(String customerType) {
-        this.customerType = customerType;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+    public void setCustomer(CustomerLoginDetailsDto customer) {
+        this.customer = customer;
     }
 }
